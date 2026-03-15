@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default screen margins -->
+    <dimen name="screen_margin">16dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+
+    <!-- Component heights -->
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="edit_text_height">48dp</dimen>
+    <dimen name="bottom_menu_height">72dp</dimen>
+
+    <!-- Corner Radii -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="button_corner_radius">8dp</dimen>
+
+    <!-- Text Sizes -->
+    <dimen name="text_title">24sp</dimen>
+    <dimen name="text_body">16sp</dimen>
+    <dimen name="text_small">14sp</dimen>
+</resources>

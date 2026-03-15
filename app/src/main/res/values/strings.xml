@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ứng dụng đọc sách</string>
+    <string name="title_activity_favorite">FavoriteActivity</string>
+    <string name="home_button">Home</string>
+    <string name="love_button">Favorite</string>
+    <string name="login_button">Login</string>
+</resources>
