@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.ngdungocsach.model.Book
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "BookDB", null, 5) { // Tăng version lên 5 để thêm cột description
+    SQLiteOpenHelper(context, "BookDB", null, 6) { // Version 6: Thêm cột pdf_url
 
     override fun onCreate(db: SQLiteDatabase) {
 
@@ -27,7 +27,8 @@ class DatabaseHelper(context: Context) :
                     "title TEXT," +
                     "author TEXT," +
                     "image TEXT," +
-                    "description TEXT DEFAULT '')"
+                    "description TEXT DEFAULT ''," +
+                    "pdf_url TEXT DEFAULT '')"
         )
 
         // bảng favorite
@@ -63,15 +64,16 @@ class DatabaseHelper(context: Context) :
             val cv = ContentValues()
             cv.put("title", book[0])
             cv.put("author", book[1])
-            cv.put("image", "") // Để trống để dùng ảnh mặc định book_sample
+            cv.put("image", "")
             cv.put("description", "Nội dung mô tả cho cuốn ${book[0]} đang được cập nhật...")
+            cv.put("pdf_url", "")
             db.insert("book", null, cv)
         }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 5) {
-            db.execSQL("ALTER TABLE book ADD COLUMN description TEXT DEFAULT ''")
+        if (oldVersion < 6) {
+            db.execSQL("ALTER TABLE book ADD COLUMN pdf_url TEXT DEFAULT ''")
         } else {
             db.execSQL("DROP TABLE IF EXISTS account")
             db.execSQL("DROP TABLE IF EXISTS book")
@@ -86,13 +88,12 @@ class DatabaseHelper(context: Context) :
         val cv = ContentValues()
         cv.put("username", username)
         cv.put("password", password)
-        cv.put("role", "user") // Mặc định là user
+        cv.put("role", "user")
 
         val result = db.insert("account", null, cv)
         return result != -1L
     }
 
-    // Kiểm tra username đã tồn tại chưa
     fun checkUserExists(username: String): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery("SELECT * FROM account WHERE username=?", arrayOf(username))
@@ -101,49 +102,42 @@ class DatabaseHelper(context: Context) :
         return exists
     }
 
-    // kiểm tra đăng nhập
     fun checkLogin(username: String, password: String): String? {
-
         val db = readableDatabase
-
         val cursor = db.rawQuery(
             "SELECT role FROM account WHERE username=? AND password=?",
             arrayOf(username, password)
         )
-
         if (cursor.moveToFirst()) {
             val role = cursor.getString(0)
             cursor.close()
             return role
         }
-
         cursor.close()
         return null
     }
 
     // thêm sách
-    fun addBook(title: String, author: String, image: String, description: String = "") {
-
+    fun addBook(title: String, author: String, image: String, description: String = "", pdfUrl: String = "") {
         val db = writableDatabase
-
         val cv = ContentValues()
         cv.put("title", title)
         cv.put("author", author)
         cv.put("image", image)
         cv.put("description", description)
-
+        cv.put("pdf_url", pdfUrl)
         db.insert("book", null, cv)
     }
 
     // cập nhật sách
-    fun updateBook(id: Int, title: String, author: String, image: String, description: String = ""): Boolean {
+    fun updateBook(id: Int, title: String, author: String, image: String, description: String = "", pdfUrl: String = ""): Boolean {
         val db = writableDatabase
         val cv = ContentValues()
         cv.put("title", title)
         cv.put("author", author)
         cv.put("image", image)
         cv.put("description", description)
-        
+        cv.put("pdf_url", pdfUrl)
         val result = db.update("book", cv, "id=?", arrayOf(id.toString()))
         return result > 0
     }
@@ -156,36 +150,27 @@ class DatabaseHelper(context: Context) :
         return result > 0
     }
 
-    // xóa sách
     fun deleteBook(id: Int): Boolean {
         val db = writableDatabase
-        // Xóa sách khỏi bảng book
         val result = db.delete("book", "id=?", arrayOf(id.toString()))
-        // Xóa các bản ghi liên quan trong bảng favorite
         db.delete("favorite", "book_id=?", arrayOf(id.toString()))
         return result > 0
     }
 
     fun getAllBooks(): ArrayList<Book> {
-
         val list = ArrayList<Book>()
         val db = readableDatabase
-
         val cursor = db.rawQuery("SELECT * FROM book", null)
-
         while (cursor.moveToNext()) {
-
             val id = cursor.getInt(0)
             val title = cursor.getString(1)
             val author = cursor.getString(2)
             val image = cursor.getString(3)
             val description = if (cursor.columnCount > 4) cursor.getString(4) ?: "" else ""
-
-            list.add(Book(id, title, author, image, description))
+            val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
+            list.add(Book(id, title, author, image, description, pdfUrl))
         }
-
         cursor.close()
-
         return list
     }
 
@@ -198,13 +183,13 @@ class DatabaseHelper(context: Context) :
             val author = cursor.getString(2)
             val image = cursor.getString(3)
             val description = cursor.getString(4) ?: ""
-            book = Book(id, title, author, image, description)
+            val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
+            book = Book(id, title, author, image, description, pdfUrl)
         }
         cursor.close()
         return book
     }
 
-    // Thêm vào yêu thích
     fun addFavorite(username: String, bookId: Int) {
         val db = writableDatabase
         val cv = ContentValues()
@@ -213,13 +198,11 @@ class DatabaseHelper(context: Context) :
         db.insertWithOnConflict("favorite", null, cv, SQLiteDatabase.CONFLICT_IGNORE)
     }
 
-    // Xóa khỏi yêu thích
     fun removeFavorite(username: String, bookId: Int) {
         val db = writableDatabase
         db.delete("favorite", "username=? AND book_id=?", arrayOf(username, bookId.toString()))
     }
 
-    // Kiểm tra đã yêu thích chưa
     fun isFavorite(username: String, bookId: Int): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery("SELECT * FROM favorite WHERE username=? AND book_id=?", arrayOf(username, bookId.toString()))
@@ -228,7 +211,6 @@ class DatabaseHelper(context: Context) :
         return exists
     }
 
-    // Lấy danh sách sách yêu thích của một user
     fun getFavoriteBooks(username: String): ArrayList<Book> {
         val list = ArrayList<Book>()
         val db = readableDatabase
@@ -238,14 +220,14 @@ class DatabaseHelper(context: Context) :
                     "WHERE favorite.username = ?",
             arrayOf(username)
         )
-
         while (cursor.moveToNext()) {
             val id = cursor.getInt(0)
             val title = cursor.getString(1)
             val author = cursor.getString(2)
             val image = cursor.getString(3)
             val description = if (cursor.columnCount > 4) cursor.getString(4) ?: "" else ""
-            list.add(Book(id, title, author, image, description))
+            val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
+            list.add(Book(id, title, author, image, description, pdfUrl))
         }
         cursor.close()
         return list

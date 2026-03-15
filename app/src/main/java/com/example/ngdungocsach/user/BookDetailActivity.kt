@@ -2,20 +2,20 @@ package com.example.ngdungocsach.user
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
 
-class BookDetailActivity : AppCompatActivity() {
+class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
 
     private lateinit var db: DatabaseHelper
     private var bookId: Int = -1
@@ -32,6 +32,7 @@ class BookDetailActivity : AppCompatActivity() {
         val txtDescription = findViewById<TextView>(R.id.txtDescription)
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
         val btnEditDescription = findViewById<MaterialButton>(R.id.btnEditDescription)
+        val btnReadBook = findViewById<MaterialButton>(R.id.btnReadBook)
 
         bookId = intent.getIntExtra("id", -1)
         val book = db.getBookById(bookId)
@@ -50,9 +51,17 @@ class BookDetailActivity : AppCompatActivity() {
             } else {
                 imgBook.setImageResource(R.drawable.book_sample)
             }
+
+            if (book.pdfUrl.isNotEmpty()) {
+                btnReadBook.visibility = View.VISIBLE
+                btnReadBook.setOnClickListener {
+                    openPdf(book.pdfUrl)
+                }
+            } else {
+                btnReadBook.visibility = View.GONE
+            }
         }
 
-        // Kiểm tra quyền admin
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val role = sharedPreferences.getString("role", null)
 
@@ -65,6 +74,19 @@ class BookDetailActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener {
             finish()
+        }
+    }
+
+    private fun openPdf(pdfUriString: String) {
+        try {
+            val uri = Uri.parse(pdfUriString)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, "application/pdf")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Không tìm thấy ứng dụng đọc PDF trên máy bạn", Toast.LENGTH_SHORT).show()
         }
     }
 

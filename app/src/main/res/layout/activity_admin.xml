@@ -95,6 +95,24 @@
             android:layout_marginBottom="@dimen/spacing_small"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChoosePdf"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:text="Chọn file "
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_small"/>
+
+
+        <TextView
+            android:id="@+id/tvPdfStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chưa chọn file PDF"
+            android:textSize="12sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/spacing_medium"/>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAdd"
             style="@style/AppButtonStyle"
             android:text="Thêm sách"

@@ -12,7 +12,7 @@
         style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="← Quay lại"
+        android:text=" Quay lại"
         android:layout_marginStart="@dimen/screen_margin"
         android:layout_marginTop="@dimen/screen_margin"
         android:layout_marginBottom="10dp"
@@ -129,6 +129,13 @@
             android:layout_marginTop="@dimen/spacing_small" />
 
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettings"
+            style="@style/AppButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="Cài đặt hệ thống"/>
 
         <!-- Nút dành riêng cho Admin -->
         <com.google.android.material.button.MaterialButton
@@ -151,5 +158,17 @@
             android:textColor="@color/white"/>
 
     </LinearLayout>
+
+    <!-- Chữ version ở góc dưới bên phải -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="v1.0.1"
+        android:textSize="20sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:alpha="0.6" />
 
 </RelativeLayout>

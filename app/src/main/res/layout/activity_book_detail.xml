@@ -55,6 +55,15 @@
             android:textSize="20sp"
             android:gravity="center_horizontal"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnReadBook"
+            style="@style/AppButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:text="Đọc sách "
+            android:visibility="gone" />
+
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -4,13 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.database.DatabaseHelper
 import com.example.ngdungocsach.user.MainActivity
+import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity() { // Đổi sang BaseActivity
 
     private lateinit var db: DatabaseHelper
 
@@ -26,7 +26,6 @@ class RegisterActivity : AppCompatActivity() {
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
         val btnBackToLogin = findViewById<MaterialButton>(R.id.btnBackToLogin)
 
-        // Nút quay về trang chủ
         btnBack.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -34,7 +33,6 @@ class RegisterActivity : AppCompatActivity() {
             finish()
         }
 
-        // Quay lại màn hình đăng nhập
         btnBackToLogin.setOnClickListener {
             finish()
         }
