@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.ngdungocsach.model.Book
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "BookDB", null, 6) { // Version 6: Thêm cột pdf_url
+    SQLiteOpenHelper(context, "BookDB", null, 7) { // Version 7: Thêm cột category
 
     override fun onCreate(db: SQLiteDatabase) {
 
@@ -28,7 +28,8 @@ class DatabaseHelper(context: Context) :
                     "author TEXT," +
                     "image TEXT," +
                     "description TEXT DEFAULT ''," +
-                    "pdf_url TEXT DEFAULT '')"
+                    "pdf_url TEXT DEFAULT ''," +
+                    "category TEXT DEFAULT 'Khác')"
         )
 
         // bảng favorite
@@ -53,11 +54,11 @@ class DatabaseHelper(context: Context) :
 
     private fun insertSampleBooks(db: SQLiteDatabase) {
         val books = arrayOf(
-            arrayOf("Đắc Nhân Tâm", "Dale Carnegie"),
-            arrayOf("Nhà Giả Kim", "Paulo Coelho"),
-            arrayOf("Tôi Thấy Hoa Vàng Trên Cỏ Xanh", "Nguyễn Nhật Ánh"),
-            arrayOf("Số Đỏ", "Vũ Trọng Phụng"),
-            arrayOf("Lão Hạc", "Nam Cao")
+            arrayOf("Đắc Nhân Tâm", "Dale Carnegie", "Kỹ năng sống"),
+            arrayOf("Nhà Giả Kim", "Paulo Coelho", "Kỹ năng sống"),
+            arrayOf("Tôi Thấy Hoa Vàng Trên Cỏ Xanh", "Nguyễn Nhật Ánh", "Ngôn tình"),
+            arrayOf("Số Đỏ", "Vũ Trọng Phụng", "Khác"),
+            arrayOf("Lão Hạc", "Nam Cao", "Khác")
         )
 
         for (book in books) {
@@ -67,6 +68,7 @@ class DatabaseHelper(context: Context) :
             cv.put("image", "")
             cv.put("description", "Nội dung mô tả cho cuốn ${book[0]} đang được cập nhật...")
             cv.put("pdf_url", "")
+            cv.put("category", book[2])
             db.insert("book", null, cv)
         }
     }
@@ -74,7 +76,11 @@ class DatabaseHelper(context: Context) :
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         if (oldVersion < 6) {
             db.execSQL("ALTER TABLE book ADD COLUMN pdf_url TEXT DEFAULT ''")
-        } else {
+        }
+        if (oldVersion < 7) {
+            db.execSQL("ALTER TABLE book ADD COLUMN category TEXT DEFAULT 'Khác'")
+        }
+        if (oldVersion >= 7) {
             db.execSQL("DROP TABLE IF EXISTS account")
             db.execSQL("DROP TABLE IF EXISTS book")
             db.execSQL("DROP TABLE IF EXISTS favorite")
@@ -118,7 +124,7 @@ class DatabaseHelper(context: Context) :
     }
 
     // thêm sách
-    fun addBook(title: String, author: String, image: String, description: String = "", pdfUrl: String = "") {
+    fun addBook(title: String, author: String, image: String, description: String = "", pdfUrl: String = "", category: String = "Khác") {
         val db = writableDatabase
         val cv = ContentValues()
         cv.put("title", title)
@@ -126,11 +132,12 @@ class DatabaseHelper(context: Context) :
         cv.put("image", image)
         cv.put("description", description)
         cv.put("pdf_url", pdfUrl)
+        cv.put("category", category)
         db.insert("book", null, cv)
     }
 
     // cập nhật sách
-    fun updateBook(id: Int, title: String, author: String, image: String, description: String = "", pdfUrl: String = ""): Boolean {
+    fun updateBook(id: Int, title: String, author: String, image: String, description: String = "", pdfUrl: String = "", category: String = "Khác"): Boolean {
         val db = writableDatabase
         val cv = ContentValues()
         cv.put("title", title)
@@ -138,6 +145,7 @@ class DatabaseHelper(context: Context) :
         cv.put("image", image)
         cv.put("description", description)
         cv.put("pdf_url", pdfUrl)
+        cv.put("category", category)
         val result = db.update("book", cv, "id=?", arrayOf(id.toString()))
         return result > 0
     }
@@ -168,7 +176,8 @@ class DatabaseHelper(context: Context) :
             val image = cursor.getString(3)
             val description = if (cursor.columnCount > 4) cursor.getString(4) ?: "" else ""
             val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
-            list.add(Book(id, title, author, image, description, pdfUrl))
+            val category = if (cursor.columnCount > 6) cursor.getString(6) ?: "Khác" else "Khác"
+            list.add(Book(id, title, author, image, description, pdfUrl, category))
         }
         cursor.close()
         return list
@@ -184,7 +193,8 @@ class DatabaseHelper(context: Context) :
             val image = cursor.getString(3)
             val description = cursor.getString(4) ?: ""
             val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
-            book = Book(id, title, author, image, description, pdfUrl)
+            val category = if (cursor.columnCount > 6) cursor.getString(6) ?: "Khác" else "Khác"
+            book = Book(id, title, author, image, description, pdfUrl, category)
         }
         cursor.close()
         return book
@@ -227,7 +237,8 @@ class DatabaseHelper(context: Context) :
             val image = cursor.getString(3)
             val description = if (cursor.columnCount > 4) cursor.getString(4) ?: "" else ""
             val pdfUrl = if (cursor.columnCount > 5) cursor.getString(5) ?: "" else ""
-            list.add(Book(id, title, author, image, description, pdfUrl))
+            val category = if (cursor.columnCount > 6) cursor.getString(6) ?: "Khác" else "Khác"
+            list.add(Book(id, title, author, image, description, pdfUrl, category))
         }
         cursor.close()
         return list

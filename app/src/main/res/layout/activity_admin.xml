@@ -36,7 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tên sách"
-            android:layout_marginBottom="@dimen/spacing_medium">
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:startIconDrawable="@drawable/ic_home">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtTitle"
                 android:layout_width="match_parent"
@@ -48,11 +49,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tác giả"
-            android:layout_marginBottom="@dimen/spacing_medium">
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:startIconDrawable="@drawable/ic_user">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtAuthor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_medium"
+            app:hintEnabled="false"
+            app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
+            app:boxCornerRadiusTopStart="@dimen/button_corner_radius"
+            app:boxCornerRadiusTopEnd="@dimen/button_corner_radius"
+            app:boxCornerRadiusBottomStart="@dimen/button_corner_radius"
+            app:boxCornerRadiusBottomEnd="@dimen/button_corner_radius">
+            <AutoCompleteTextView
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:paddingStart="40dp"
+                android:paddingEnd="12dp"
+                android:hint="Chọn thể loại"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -83,7 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/book_sample" />
+                android:src="@drawable/white" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton

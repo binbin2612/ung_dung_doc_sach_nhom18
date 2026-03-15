@@ -6,5 +6,6 @@ data class Book(
     val author: String,
     val image: String,
     val description: String = "",
-    val pdfUrl: String = ""
+    val pdfUrl: String = "",
+    val category: String = "Khác"
 )

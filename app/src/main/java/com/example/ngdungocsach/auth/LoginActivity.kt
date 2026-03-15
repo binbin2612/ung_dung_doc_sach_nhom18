@@ -116,8 +116,8 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
     ) {
         layoutLogin.visibility = View.GONE
         layoutUserInfo.visibility = View.VISIBLE
-        tvWelcome.text = "Chào mừng, $username!"
-        tvUserRole.text = "Vai trò: ${role.replaceFirstChar { it.uppercase() }}"
+        tvWelcome.text = "Chào mừng bạn, $username!"
+        tvUserRole.visibility = View.GONE // ẩn dòng hiển thị vai trò
         btnManageBooks.visibility = if (role == "admin") View.VISIBLE else View.GONE
     }
 
@@ -132,8 +132,8 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
             .setTitle("Cài đặt hệ thống")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> showThemeDialog()
-                    1 -> showFontSizeDialog()
+                    0 -> showThemeDialog()//chỉnh sửa chủ đề sáng,tối hoặc tự động
+                    1 -> showFontSizeDialog()//chỉnh sửa kích thước font chữ (demo)
                 }
             }
             .show()

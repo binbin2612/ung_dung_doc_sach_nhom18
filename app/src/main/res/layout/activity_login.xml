@@ -115,7 +115,7 @@
             android:id="@+id/tvWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Chào mừng, User!"
+            android:text="Chào mừng bạn, User!"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="?attr/colorOnSurface"/>
@@ -124,7 +124,6 @@
             android:id="@+id/tvUserRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vai trò: User"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_marginTop="@dimen/spacing_small" />
 
@@ -149,7 +148,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/AppButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_medium"
@@ -163,7 +162,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="v1.0.1"
+        android:text="v1.0.2"
         android:textSize="20sp"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:layout_alignParentBottom="true"

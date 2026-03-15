@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/book_sample"
+                android:src="@drawable/white"
                 android:contentDescription="book cover" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -64,6 +64,19 @@
                 android:text="Tác giả"
                 android:textSize="14sp"
                 android:textColor="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/tvCategoryName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Khác"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnPrimary"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:background="@drawable/bg_category_tag"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout

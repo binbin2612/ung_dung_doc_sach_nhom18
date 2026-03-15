@@ -25,6 +25,7 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         val imgBook: ImageView = itemView.findViewById(R.id.imgBook)
         val tvBookName: TextView = itemView.findViewById(R.id.tvBookName)
         val tvAuthorName: TextView = itemView.findViewById(R.id.tvAuthorName)
+        val tvCategoryName: TextView = itemView.findViewById(R.id.tvCategoryName)
         val btnFavorite: MaterialButton = itemView.findViewById(R.id.btnFavorite)
         val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDelete)
         val btnEdit: MaterialButton = itemView.findViewById(R.id.btnEdit)
@@ -46,11 +47,12 @@ class BookAdapter(private var bookList: MutableList<Book>) :
 
         holder.tvBookName.text = book.title
         holder.tvAuthorName.text = book.author
+        holder.tvCategoryName.text = book.category
         
         try {
             holder.imgBook.setImageURI(Uri.parse(book.image))
         } catch (e: Exception) {
-            holder.imgBook.setImageResource(R.drawable.book_sample)
+            holder.imgBook.setImageResource(R.drawable.white)
         }
 
         // Xử lý hiển thị dựa trên vai trò

@@ -21,6 +21,8 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
     private var selectedPdfUri: Uri? = null
     private lateinit var imgBook: ImageView
     private lateinit var tvPdfStatus: TextView
+    private lateinit var spinnerCategory: AutoCompleteTextView
+    private val categories = arrayOf("Ngôn tình", "Hành động", "Trinh thám", "Kinh dị", "Khoa học", "Kỹ năng sống", "Khác")
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +39,11 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
         val btnChoosePdf = findViewById<MaterialButton>(R.id.btnChoosePdf)
         imgBook = findViewById(R.id.imgBook)
         tvPdfStatus = findViewById(R.id.tvPdfStatus)
+        spinnerCategory = findViewById(R.id.spinnerCategory)
         val btnAdd = findViewById<MaterialButton>(R.id.btnAdd)
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        spinnerCategory.setAdapter(adapter)
 
         btnBack.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -79,17 +85,19 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
             val description = txtDescription.text.toString()
             val imagePath = selectedImageUri?.toString() ?: ""
             val pdfPath = selectedPdfUri?.toString() ?: ""
+            val category = spinnerCategory.text.toString()
 
             if (title.isNotEmpty() && author.isNotEmpty()) {
-                db.addBook(title, author, imagePath, description, pdfPath)
+                db.addBook(title, author, imagePath, description, pdfPath, category)
                 Toast.makeText(this, "Thêm sách thành công", Toast.LENGTH_SHORT).show()
                 txtTitle.text?.clear()
                 txtAuthor.text?.clear()
                 txtDescription.text?.clear()
-                imgBook.setImageResource(R.drawable.book_sample)
+                imgBook.setImageResource(R.drawable.white)
                 tvPdfStatus.text = "Chưa chọn file PDF"
                 selectedImageUri = null
                 selectedPdfUri = null
+                spinnerCategory.setText("", false)
             } else {
                 Toast.makeText(this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show()
             }
