@@ -40,6 +40,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
         val tvUserRole = findViewById<TextView>(R.id.tvUserRole)
         val btnManageBooks = findViewById<Button>(R.id.btnManageBooks)
+        val btnManageUsers = findViewById<Button>(R.id.btnManageUsers)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnSettings = findViewById<Button>(R.id.btnSettings)
 
@@ -48,7 +49,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         val savedRole = sharedPreferences.getString("role", null)
 
         if (savedUsername != null && savedRole != null) {
-            showUserInfo(layoutLogin, layoutUserInfo, savedUsername, savedRole, tvWelcome, tvUserRole, btnManageBooks)
+            showUserInfo(layoutLogin, layoutUserInfo, savedUsername, savedRole, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers)
         } else {
             showLoginForm(layoutLogin, layoutUserInfo)
         }
@@ -78,7 +79,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
                 editor.apply()
 
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                showUserInfo(layoutLogin, layoutUserInfo, username, role, tvWelcome, tvUserRole, btnManageBooks)
+                showUserInfo(layoutLogin, layoutUserInfo, username, role, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers)
             } else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show()
             }
@@ -86,6 +87,12 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
 
         btnManageBooks.setOnClickListener {
             startActivity(Intent(this, AdminActivity::class.java))
+        }
+
+        btnManageUsers.setOnClickListener {
+            // Chuyển sang trang quản lý người dùng
+            val intent = Intent(this, com.example.ngdungocsach.admin.ManageUsersActivity::class.java)
+            startActivity(intent)
         }
 
         btnSettings.setOnClickListener {
@@ -112,13 +119,21 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         role: String,
         tvWelcome: TextView,
         tvUserRole: TextView,
-        btnManageBooks: Button
+        btnManageBooks: Button,
+        btnManageUsers: Button
     ) {
         layoutLogin.visibility = View.GONE
         layoutUserInfo.visibility = View.VISIBLE
         tvWelcome.text = "Chào mừng bạn, $username!"
         tvUserRole.visibility = View.GONE // ẩn dòng hiển thị vai trò
-        btnManageBooks.visibility = if (role == "admin") View.VISIBLE else View.GONE
+        
+        if (role == "admin") {
+            btnManageBooks.visibility = View.VISIBLE
+            btnManageUsers.visibility = View.VISIBLE
+        } else {
+            btnManageBooks.visibility = View.GONE
+            btnManageUsers.visibility = View.GONE
+        }
     }
 
     private fun showLoginForm(layoutLogin: View, layoutUserInfo: View) {

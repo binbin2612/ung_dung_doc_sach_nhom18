@@ -4,13 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.*
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ArrayAdapter
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ngdungocsach.database.DatabaseHelper
 import com.example.ngdungocsach.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 class EditBookActivity : AppCompatActivity() {
 
@@ -20,7 +24,7 @@ class EditBookActivity : AppCompatActivity() {
     private lateinit var imgBook: ImageView
     private lateinit var txtPdfName: TextView
     private var bookId: Int = -1
-    private lateinit var spinnerCategory: AutoCompleteTextView
+    private lateinit var spinnerCategory: MaterialAutoCompleteTextView
     private val categories = arrayOf("Ngôn tình", "Hành động", "Trinh thám", "Kinh dị", "Khoa học", "Kỹ năng sống", "Khác")
 
     @SuppressLint("MissingInflatedId")
@@ -36,9 +40,9 @@ class EditBookActivity : AppCompatActivity() {
         val txtDescription = findViewById<TextInputEditText>(R.id.txtDescription)
         val btnChooseImage = findViewById<MaterialButton>(R.id.btnChooseImage)
         val btnChoosePdf = findViewById<MaterialButton>(R.id.btnChoosePdf)
-        txtPdfName = findViewById(R.id.txtPdfName)
-        imgBook = findViewById(R.id.imgBook)
-        spinnerCategory = findViewById(R.id.spinnerCategory)
+        txtPdfName = findViewById<TextView>(R.id.txtPdfName)
+        imgBook = findViewById<ImageView>(R.id.imgBook)
+        spinnerCategory = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerCategory)
         val btnUpdate = findViewById<MaterialButton>(R.id.btnUpdate)
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)

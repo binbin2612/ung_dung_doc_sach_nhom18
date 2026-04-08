@@ -243,4 +243,23 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return list
     }
+
+    // --- QUẢN LÝ NGƯỜI DÙNG (Dành cho Admin) ---
+    fun getAllAccounts(): ArrayList<Triple<Int, String, String>> {
+        val list = ArrayList<Triple<Int, String, String>>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT id, username, role FROM account", null)
+        while (cursor.moveToNext()) {
+            list.add(Triple(cursor.getInt(0), cursor.getString(1), cursor.getString(2)))
+        }
+        cursor.close()
+        return list
+    }
+
+    fun deleteAccount(id: Int): Boolean {
+        val db = writableDatabase
+        // Không cho phép xóa chính tài khoản admin gốc (id=1 hoặc username='admin')
+        val result = db.delete("account", "id=? AND username != 'admin'", arrayOf(id.toString()))
+        return result > 0
+    }
 }

@@ -21,6 +21,9 @@
             android:name="com.example.ngdungocsach.admin.EditBookActivity"
             android:exported="false" />
         <activity
+            android:name="com.example.ngdungocsach.admin.ManageUsersActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.ngdungocsach.user.BookDetailActivity"
             android:exported="false" />
         <activity

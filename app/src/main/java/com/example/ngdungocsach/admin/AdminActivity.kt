@@ -13,6 +13,7 @@ import com.example.ngdungocsach.user.MainActivity
 import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
 
@@ -21,7 +22,7 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
     private var selectedPdfUri: Uri? = null
     private lateinit var imgBook: ImageView
     private lateinit var tvPdfStatus: TextView
-    private lateinit var spinnerCategory: AutoCompleteTextView
+    private lateinit var spinnerCategory: MaterialAutoCompleteTextView
     private val categories = arrayOf("Ngôn tình", "Hành động", "Trinh thám", "Kinh dị", "Khoa học", "Kỹ năng sống", "Khác")
 
     @SuppressLint("MissingInflatedId")
@@ -39,7 +40,7 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
         val btnChoosePdf = findViewById<MaterialButton>(R.id.btnChoosePdf)
         imgBook = findViewById(R.id.imgBook)
         tvPdfStatus = findViewById(R.id.tvPdfStatus)
-        spinnerCategory = findViewById(R.id.spinnerCategory)
+        spinnerCategory = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerCategory)
         val btnAdd = findViewById<MaterialButton>(R.id.btnAdd)
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)

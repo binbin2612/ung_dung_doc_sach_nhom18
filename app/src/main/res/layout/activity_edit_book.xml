@@ -68,7 +68,7 @@
             app:boxCornerRadiusTopEnd="@dimen/button_corner_radius"
             app:boxCornerRadiusBottomStart="@dimen/button_corner_radius"
             app:boxCornerRadiusBottomEnd="@dimen/button_corner_radius">
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/spinnerCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
