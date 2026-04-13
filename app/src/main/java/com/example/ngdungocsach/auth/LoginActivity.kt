@@ -44,7 +44,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnSettings = findViewById<Button>(R.id.btnSettings)
 
-        // Kiểm tra trạng thái đăng nhập
+        // KT trạng thái đăng nhập
         val savedUsername = sharedPreferences.getString("username", null)
         val savedRole = sharedPreferences.getString("role", null)
 
@@ -60,7 +60,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
             startActivity(intent)
             finish()
         }
-
+//nhắc nhở bấm đầy đủ thông tin
         btnLogin.setOnClickListener {
             val username = txtUser.text.toString()
             val password = txtPass.text.toString()
@@ -79,7 +79,10 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
                 editor.apply()
 
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                showUserInfo(layoutLogin, layoutUserInfo, username, role, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers)
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
             } else {
                 Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show()
             }
@@ -125,7 +128,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         layoutLogin.visibility = View.GONE
         layoutUserInfo.visibility = View.VISIBLE
         tvWelcome.text = "Chào mừng bạn, $username!"
-        tvUserRole.visibility = View.GONE // ẩn dòng hiển thị vai trò
+        tvUserRole.visibility = View.GONE // ẩn dòng hiển thị role
         
         if (role == "admin") {
             btnManageBooks.visibility = View.VISIBLE
@@ -164,7 +167,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
                 val editor = sharedPreferences.edit()
                 editor.putInt("theme_mode", which)
                 editor.apply()
-
+// các lựa chọn chủ đề sáng tối
                 when (which) {
                     0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
