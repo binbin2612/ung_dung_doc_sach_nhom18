@@ -1,4 +1,2 @@
-﻿# ung_dung_doc_sach_nhom18 v1.0.2
-bản này thêm phân loại lựa chọn thể loại cho người dùng
-admin có thể thêm thể loại cho từng sách
-cập nhật thêm tính năng thêm xóa sửa cho admin ở phần sách đã thêm vào trước đó khoogn cần phải xóa và làm lại
+﻿# ung_dung_doc_sach_nhom18 v1.0.3
+Bản cập nhật mới thêm quản lý người dùng có thể xóa người dùng
