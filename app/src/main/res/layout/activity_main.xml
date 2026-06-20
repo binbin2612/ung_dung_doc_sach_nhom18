@@ -2,24 +2,37 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:windowBackground">
+    android:background="@color/background">
 
-    <!-- Tiêu đề -->
-    <TextView
-        android:id="@+id/txtTitle"
-        android:layout_width="wrap_content"
+    <!-- Header Section -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Trang chủ"
-        android:textSize="@dimen/text_title"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
-        android:padding="@dimen/screen_margin"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:orientation="vertical"
+        android:padding="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Khám phá"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tìm kiếm cuốn sách yêu thích của bạn"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="4dp"/>
+    </LinearLayout>
 
     <!-- Search Bar -->
     <com.google.android.material.textfield.TextInputLayout
@@ -27,10 +40,11 @@
         style="@style/AppEditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_margin"
+        android:layout_marginHorizontal="20dp"
         app:hintEnabled="false"
         app:startIconDrawable="@android:drawable/ic_menu_search"
-        app:layout_constraintTop_toBottomOf="@id/txtTitle"
+        app:startIconTint="@color/gray"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -38,25 +52,29 @@
             android:id="@+id/edtSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Tìm kiếm sách..."
+            android:hint="Tên sách, tác giả..."
             android:inputType="text"
-            android:paddingStart="40dp"/>
+            android:textColor="@color/white"
+            android:textColorHint="@color/gray"
+            android:background="@null"
+            android:paddingVertical="12dp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Category Spinner -->
+    <!-- Category Filter Chip-like -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutCategory"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/screen_margin"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
         app:hintEnabled="false"
-        app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
-        app:boxCornerRadiusTopStart="@dimen/button_corner_radius"
-        app:boxCornerRadiusTopEnd="@dimen/button_corner_radius"
-        app:boxCornerRadiusBottomStart="@dimen/button_corner_radius"
-        app:boxCornerRadiusBottomEnd="@dimen/button_corner_radius"
+        app:boxStrokeWidth="0dp"
+        app:boxBackgroundColor="@color/surface_variant"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
         app:layout_constraintTop_toBottomOf="@id/layoutSearch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -66,92 +84,83 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            android:paddingStart="40dp"
-            android:paddingEnd="12dp"
-            android:hint="Lọc theo thể loại"
+            android:textColor="@color/white"
+            android:paddingVertical="12dp"
+            android:hint="Thể loại"
             android:text="Tất cả"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- RecyclerView -->
+    <!-- Books List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBooks"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:paddingHorizontal="@dimen/spacing_small"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="10dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/layoutCategory"
-        app:layout_constraintBottom_toTopOf="@id/bottomMenu"
+        app:layout_constraintBottom_toTopOf="@id/bottomMenuCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Empty State Message -->
+    <!-- Empty State -->
     <TextView
         android:id="@+id/tvEmptyMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Không tìm thấy sách phù hợp"
-        android:textSize="16sp"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:text="Không tìm thấy sách nào"
+        android:textColor="@color/gray"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="@id/rvBooks"
         app:layout_constraintBottom_toBottomOf="@id/rvBooks"
-        app:layout_constraintStart_toStartOf="@id/rvBooks"
-        app:layout_constraintEnd_toEndOf="@id/rvBooks"/>
-
-    <!-- Bottom Menu -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomMenu"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/bottom_menu_height"
-        android:background="?attr/colorSurface"
-        android:elevation="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/Home_FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/home_button"
-            android:src="@drawable/ic_home"
-            app:fabSize="normal"
-            app:backgroundTint="?attr/colorSurface"
-            app:tint="?attr/colorOnSurface"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/Love_FloatingActionButton"
-            app:layout_constraintHorizontal_chainStyle="spread" />
+    <!-- Bottom Navigation Bar (Custom Look) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/bottomMenuCard"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_margin="16dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/Love_FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/love_button"
-            android:src="@drawable/ic_favorite"
-            app:fabSize="normal"
-            app:backgroundTint="?attr/colorSurface"
-            app:tint="?attr/colorOnSurface"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/Home_FloatingActionButton"
-            app:layout_constraintEnd_toStartOf="@+id/Login_FloatingActionButton" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/Login_FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/login_button"
-            android:src="@drawable/ic_user"
-            app:fabSize="normal"
-            app:backgroundTint="?attr/colorSurface"
-            app:tint="?attr/colorOnSurface"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/Love_FloatingActionButton"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <ImageButton
+                android:id="@+id/Home_FloatingActionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_home"
+                app:tint="@color/primary" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/Love_FloatingActionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_favorite"
+                app:tint="@color/gray" />
+
+            <ImageButton
+                android:id="@+id/Login_FloatingActionButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_user"
+                app:tint="@color/gray" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,11 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_small"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="2dp"
-    app:strokeWidth="0dp"
-    app:cardBackgroundColor="?attr/colorSurface">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/surface_variant"
+    app:cardBackgroundColor="@color/surface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,9 +19,9 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardImage"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
-            app:cardCornerRadius="4dp"
+            android:layout_width="70dp"
+            android:layout_height="100dp"
+            app:cardCornerRadius="12dp"
             app:strokeWidth="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,8 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tên sách"
-                android:textSize="18sp"
-                android:textColor="?attr/colorOnSurface"
+                android:textSize="16sp"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"/>
@@ -62,19 +64,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Tác giả"
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="13sp"
+                android:textColor="@color/on_surface_variant" />
 
             <TextView
                 android:id="@+id/tvCategoryName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="8dp"
                 android:text="Khác"
-                android:textSize="12sp"
-                android:textColor="?attr/colorOnPrimary"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2dp"
+                android:textSize="11sp"
+                android:textColor="@color/primary"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
                 android:background="@drawable/bg_category_tag"
                 android:textStyle="bold"/>
         </LinearLayout>
@@ -91,30 +93,30 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
                 style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 app:icon="@android:drawable/ic_menu_edit"
-                app:iconTint="?attr/colorPrimary"
+                app:iconTint="@color/primary"
                 android:visibility="gone"
                 android:contentDescription="Edit" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFavorite"
                 style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 app:icon="@drawable/ic_heart_outline"
-                app:iconTint="@color/red"
+                app:iconTint="@color/error"
                 android:visibility="gone"
                 android:contentDescription="Favorite" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
                 style="@style/Widget.Material3.Button.IconButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 app:icon="@android:drawable/ic_menu_delete"
-                app:iconTint="@color/red"
+                app:iconTint="@color/error"
                 android:visibility="gone"
                 android:contentDescription="Delete" />
         </LinearLayout>

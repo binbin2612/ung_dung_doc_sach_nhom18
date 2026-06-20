@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.ngdungocsach.model.Book
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "BookDB", null, 7) { // Version 7: Thêm cột category
+    SQLiteOpenHelper(context, "BookDB", null, 8) { // Version 8: Thêm cột subscription_expiry
 
     override fun onCreate(db: SQLiteDatabase) {
 
@@ -17,7 +17,8 @@ class DatabaseHelper(context: Context) :
                     "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "username TEXT UNIQUE," +
                     "password TEXT," +
-                    "role TEXT)"
+                    "role TEXT," +
+                    "subscription_expiry INTEGER DEFAULT 0)" // Thêm expiry date (timestamp)
         )
 
         // bảng book
@@ -80,11 +81,8 @@ class DatabaseHelper(context: Context) :
         if (oldVersion < 7) {
             db.execSQL("ALTER TABLE book ADD COLUMN category TEXT DEFAULT 'Khác'")
         }
-        if (oldVersion >= 7) {
-            db.execSQL("DROP TABLE IF EXISTS account")
-            db.execSQL("DROP TABLE IF EXISTS book")
-            db.execSQL("DROP TABLE IF EXISTS favorite")
-            onCreate(db)
+        if (oldVersion < 8) {
+            db.execSQL("ALTER TABLE account ADD COLUMN subscription_expiry INTEGER DEFAULT 0")
         }
     }
 
@@ -261,5 +259,59 @@ class DatabaseHelper(context: Context) :
         // Không cho phép xóa chính tài khoản admin gốc (id=1 hoặc username='admin')
         val result = db.delete("account", "id=? AND username != 'admin'", arrayOf(id.toString()))
         return result > 0
+    }
+
+    // --- QUẢN LÝ GÓI CƯỚC ---
+    fun updateSubscription(username: String, days: Int): Boolean {
+        val db = writableDatabase
+        val currentTime = System.currentTimeMillis()
+        
+        // Lấy thời hạn hiện tại
+        var currentExpiry: Long = 0
+        val cursor = db.rawQuery("SELECT subscription_expiry FROM account WHERE username=?", arrayOf(username))
+        if (cursor.moveToFirst()) {
+            currentExpiry = cursor.getLong(0)
+        }
+        cursor.close()
+
+        // Nếu đã hết hạn thì tính từ hiện tại, nếu chưa thì cộng dồn
+        val baseTime = if (currentExpiry > currentTime) currentExpiry else currentTime
+        val newExpiry = baseTime + (days.toLong() * 24 * 60 * 60 * 1000)
+
+        val cv = ContentValues()
+        cv.put("subscription_expiry", newExpiry)
+        return db.update("account", cv, "username=?", arrayOf(username)) > 0
+    }
+
+    fun isSubscriptionActive(username: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT role, subscription_expiry FROM account WHERE username=?", arrayOf(username))
+        var active = false
+        if (cursor.moveToFirst()) {
+            val role = cursor.getString(0)
+            val expiry = cursor.getLong(1)
+            // Admin luôn có quyền đọc, User phải còn hạn
+            active = role == "admin" || expiry > System.currentTimeMillis()
+        }
+        cursor.close()
+        return active
+    }
+
+    fun getSubscriptionExpiry(username: String): Long {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT subscription_expiry FROM account WHERE username=?", arrayOf(username))
+        var expiry: Long = 0
+        if (cursor.moveToFirst()) {
+            expiry = cursor.getLong(0)
+        }
+        cursor.close()
+        return expiry
+    }
+
+    fun cancelSubscription(username: String): Boolean {
+        val db = writableDatabase
+        val cv = ContentValues()
+        cv.put("subscription_expiry", 0) // Hoặc System.currentTimeMillis() để hết hạn ngay lập tức
+        return db.update("account", cv, "username=?", arrayOf(username)) > 0
     }
 }

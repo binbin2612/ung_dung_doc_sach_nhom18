@@ -27,6 +27,9 @@
             android:name="com.example.ngdungocsach.user.BookDetailActivity"
             android:exported="false" />
         <activity
+            android:name="com.example.ngdungocsach.user.SubscriptionActivity"
+            android:exported="false" />
+        <activity
             android:name="com.example.ngdungocsach.auth.LoginActivity"
             android:exported="false" />
         <activity

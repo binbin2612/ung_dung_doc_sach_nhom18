@@ -28,7 +28,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
 
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
         val layoutLogin = findViewById<LinearLayout>(R.id.layoutLogin)
-        val layoutUserInfo = findViewById<LinearLayout>(R.id.layoutUserInfo)
+        val layoutUserInfo = findViewById<ScrollView>(R.id.layoutUserInfo)
 
         // Login views
         val txtUser = findViewById<EditText>(R.id.txtUser)
@@ -41,6 +41,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         val tvUserRole = findViewById<TextView>(R.id.tvUserRole)
         val btnManageBooks = findViewById<Button>(R.id.btnManageBooks)
         val btnManageUsers = findViewById<Button>(R.id.btnManageUsers)
+        val btnSubscription = findViewById<Button>(R.id.btnSubscription)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnSettings = findViewById<Button>(R.id.btnSettings)
 
@@ -49,7 +50,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         val savedRole = sharedPreferences.getString("role", null)
 
         if (savedUsername != null && savedRole != null) {
-            showUserInfo(layoutLogin, layoutUserInfo, savedUsername, savedRole, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers)
+            showUserInfo(layoutLogin, layoutUserInfo, savedUsername, savedRole, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers, btnSubscription)
         } else {
             showLoginForm(layoutLogin, layoutUserInfo)
         }
@@ -79,6 +80,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
                 editor.apply()
 
                 Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
+                showUserInfo(layoutLogin, layoutUserInfo, username, role, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers, btnSubscription)
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
@@ -95,6 +97,11 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         btnManageUsers.setOnClickListener {
             // Chuyển sang trang quản lý người dùng
             val intent = Intent(this, com.example.ngdungocsach.admin.ManageUsersActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnSubscription.setOnClickListener {
+            val intent = Intent(this, com.example.ngdungocsach.user.SubscriptionActivity::class.java)
             startActivity(intent)
         }
 
@@ -123,13 +130,16 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         tvWelcome: TextView,
         tvUserRole: TextView,
         btnManageBooks: Button,
-        btnManageUsers: Button
+        btnManageUsers: Button,
+        btnSubscription: Button
     ) {
         layoutLogin.visibility = View.GONE
         layoutUserInfo.visibility = View.VISIBLE
         tvWelcome.text = "Chào mừng bạn, $username!"
         tvUserRole.visibility = View.GONE // ẩn dòng hiển thị role
         
+        btnSubscription.visibility = View.VISIBLE // Luôn hiện nút đăng ký cho mọi User
+
         if (role == "admin") {
             btnManageBooks.visibility = View.VISIBLE
             btnManageUsers.visibility = View.VISIBLE

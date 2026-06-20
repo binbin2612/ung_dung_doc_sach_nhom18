@@ -4,31 +4,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:windowBackground">
+    android:background="@color/background">
 
     <LinearLayout
         android:orientation="vertical"
-        android:padding="@dimen/screen_margin"
+        android:padding="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBack"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:text="Quay lại"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_medium"
-            app:icon="@drawable/ic_home"/>
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            app:icon="@drawable/ic_home"
+            app:iconTint="@color/white"
+            android:backgroundTint="@color/surface" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="THÊM SÁCH MỚI"
-            android:textSize="@dimen/text_title"
+            android:text="Thêm sách mới"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="@dimen/spacing_large"
+            android:textColor="@color/white"
+            android:layout_marginBottom="32dp"
             android:layout_gravity="center_horizontal"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -36,12 +37,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tên sách"
-            android:layout_marginBottom="@dimen/spacing_medium"
-            app:startIconDrawable="@drawable/ic_home">
+            android:layout_marginBottom="16dp"
+            app:startIconDrawable="@drawable/ic_home"
+            app:startIconTint="@color/gray">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtTitle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -49,32 +52,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tác giả"
-            android:layout_marginBottom="@dimen/spacing_medium"
-            app:startIconDrawable="@drawable/ic_user">
+            android:layout_marginBottom="16dp"
+            app:startIconDrawable="@drawable/ic_user"
+            app:startIconTint="@color/gray">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtAuthor"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_medium"
+            android:layout_marginBottom="16dp"
             app:hintEnabled="false"
-            app:startIconDrawable="@android:drawable/ic_menu_sort_by_size"
-            app:boxCornerRadiusTopStart="@dimen/button_corner_radius"
-            app:boxCornerRadiusTopEnd="@dimen/button_corner_radius"
-            app:boxCornerRadiusBottomStart="@dimen/button_corner_radius"
-            app:boxCornerRadiusBottomEnd="@dimen/button_corner_radius">
+            app:boxStrokeColor="@color/primary"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
             <AutoCompleteTextView
                 android:id="@+id/spinnerCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                android:paddingStart="40dp"
-                android:paddingEnd="12dp"
+                android:textColor="@color/white"
                 android:hint="Chọn thể loại"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -83,47 +87,64 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Mô tả sách"
-            android:layout_marginBottom="@dimen/spacing_medium">
+            android:layout_marginBottom="24dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
+                android:textColor="@color/white"
                 android:inputType="textMultiLine"
                 android:minLines="3"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ảnh bìa sách"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"/>
+
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="200dp"
-            android:layout_height="280dp"
+            android:layout_width="160dp"
+            android:layout_height="240dp"
             android:layout_gravity="center"
-            android:layout_marginVertical="@dimen/spacing_medium"
-            app:cardCornerRadius="@dimen/card_corner_radius"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
             app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorSurfaceVariant">
+            app:strokeColor="@color/surface_variant"
+            app:cardBackgroundColor="@color/surface">
             <ImageView
                 android:id="@+id/imgBook"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/white" />
+                android:src="@drawable/white"
+                android:contentDescription="Preview cover" />
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnChooseImage"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/AppButtonStyle"
             android:text="Chọn hình ảnh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_small"/>
+            android:backgroundTint="@color/surface"
+            android:textColor="@color/white"
+            android:layout_marginBottom="12dp"
+            app:icon="@android:drawable/ic_menu_gallery"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnChoosePdf"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:text="Chọn file "
+            style="@style/AppButtonStyle"
+            android:text="Chọn file PDF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_small"/>
+            android:backgroundTint="@color/surface"
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"
+            app:icon="@android:drawable/ic_menu_save"/>
 
 
         <TextView
@@ -132,16 +153,18 @@
             android:layout_height="wrap_content"
             android:text="Chưa chọn file PDF"
             android:textSize="12sp"
+            android:textColor="@color/gray"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/spacing_medium"/>
+            android:layout_marginBottom="32dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAdd"
             style="@style/AppButtonStyle"
-            android:text="Thêm sách"
+            android:text="Thêm sách vào kho"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_medium"/>
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/on_primary"/>
 
     </LinearLayout>
 </ScrollView>

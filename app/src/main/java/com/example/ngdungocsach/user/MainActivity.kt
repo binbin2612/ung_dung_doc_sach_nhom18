@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,6 @@ import com.example.ngdungocsach.auth.LoginActivity
 import com.example.ngdungocsach.database.DatabaseHelper
 import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.ui.BaseActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 
 class MainActivity : BaseActivity() { // Đổi sang BaseActivity
@@ -43,9 +43,9 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage)
         spinnerCategoryFilter = findViewById(R.id.spinnerCategoryFilter)
 
-        val btnHome = findViewById<FloatingActionButton>(R.id.Home_FloatingActionButton)
-        val btnLove = findViewById<FloatingActionButton>(R.id.Love_FloatingActionButton)
-        val btnLogin = findViewById<FloatingActionButton>(R.id.Login_FloatingActionButton)
+        val btnHome = findViewById<ImageButton>(R.id.Home_FloatingActionButton)
+        val btnLove = findViewById<ImageButton>(R.id.Love_FloatingActionButton)
+        val btnLogin = findViewById<ImageButton>(R.id.Login_FloatingActionButton)
 
         rvBooks.layoutManager = LinearLayoutManager(this)
 

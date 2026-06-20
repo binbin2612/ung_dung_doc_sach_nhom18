@@ -4,48 +4,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:windowBackground">
+    android:background="@color/background">
 
     <!-- Nút quay về -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBack"
-        style="@style/Widget.Material3.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="← Quay lại"
-        android:layout_marginStart="@dimen/screen_margin"
-        android:layout_marginTop="@dimen/screen_margin"
-        android:layout_marginBottom="10dp"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:icon="@drawable/ic_home"
+        app:iconTint="@color/white"
+        android:backgroundTint="@color/surface"
         android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_large"
+        android:padding="32dp"
         android:gravity="center">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_user"
+            app:tint="@color/primary"
+            android:layout_marginBottom="24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ĐĂNG KÝ"
-            android:textSize="@dimen/text_title"
+            android:text="Tạo tài khoản"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="@dimen/spacing_large"/>
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bắt đầu hành trình đọc sách của bạn"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:layout_marginBottom="32dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/AppEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tên đăng nhập"
-            app:startIconDrawable="@drawable/ic_user">
+            app:startIconDrawable="@drawable/ic_user"
+            app:startIconTint="@color/gray">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtNewUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -53,15 +70,18 @@
             style="@style/AppEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_medium"
+            android:layout_marginTop="16dp"
             android:hint="Mật khẩu"
             app:startIconDrawable="@drawable/ic_user"
-            app:passwordToggleEnabled="true">
+            app:startIconTint="@color/gray"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/gray">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtNewPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -70,16 +90,20 @@
             style="@style/AppButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_large"
-            android:text="Đăng ký" />
+            android:layout_marginTop="32dp"
+            android:text="Đăng ký ngay"
+            android:backgroundTint="@color/primary"
+            android:textColor="@color/on_primary"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnBackToLogin"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_medium"
-            android:text="Đã có tài khoản? Đăng nhập" />
+            android:layout_marginTop="16dp"
+            android:text="Đã có tài khoản? Đăng nhập"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
 
     </LinearLayout>
 </RelativeLayout>

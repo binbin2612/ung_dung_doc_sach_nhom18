@@ -42,6 +42,10 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
         bookId = intent.getIntExtra("id", -1)
         val book = db.getBookById(bookId)
 
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val role = sharedPreferences.getString("role", null)
+        val username = sharedPreferences.getString("username", null)
+
         if (book != null) {
             txtTitle.text = book.title
             txtAuthor.text = book.author
@@ -61,15 +65,16 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
             if (book.pdfUrl.isNotEmpty()) {
                 btnReadBook.visibility = View.VISIBLE
                 btnReadBook.setOnClickListener {
-                    openPdf(book.pdfUrl)
+                    if (username != null && db.isSubscriptionActive(username)) {
+                        openPdf(book.pdfUrl)
+                    } else {
+                        showSubscriptionRequiredDialog()
+                    }
                 }
             } else {
                 btnReadBook.visibility = View.GONE
             }
         }
-
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val role = sharedPreferences.getString("role", null)
 
         if (role == "admin") {
             btnEditDescription.visibility = View.VISIBLE
@@ -106,6 +111,18 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
         } catch (e: Exception) {
             Toast.makeText(this, "Không tìm thấy ứng dụng đọc PDF trên máy bạn", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showSubscriptionRequiredDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Yêu cầu đăng ký")
+            .setMessage("Bạn cần đăng ký gói cước để đọc cuốn sách này. Bạn có muốn chuyển đến trang đăng ký không?")
+            .setPositiveButton("Đăng ký") { _, _ ->
+                val intent = Intent(this, SubscriptionActivity::class.java)
+                startActivity(intent)
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
     }
 
     private fun showEditDescriptionDialog(tvDescription: TextView) {
