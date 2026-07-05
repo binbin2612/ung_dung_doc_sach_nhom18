@@ -5,8 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatDelegate
-import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.database.FirebaseHelper
 import com.example.ngdungocsach.admin.AdminActivity
 import com.example.ngdungocsach.user.MainActivity
 import com.example.ngdungocsach.R
@@ -14,16 +13,16 @@ import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
+class LoginActivity : BaseActivity() {
 
-    private lateinit var db: DatabaseHelper
+    private lateinit var firebaseHelper: FirebaseHelper
     private lateinit var sharedPreferences: android.content.SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        db = DatabaseHelper(this)
+        firebaseHelper = FirebaseHelper()
         sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
 
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
@@ -61,32 +60,33 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
             startActivity(intent)
             finish()
         }
-//nhắc nhở bấm đầy đủ thông tin
+
         btnLogin.setOnClickListener {
-            val username = txtUser.text.toString()
-            val password = txtPass.text.toString()
+            val username = txtUser.text.toString().trim()
+            val password = txtPass.text.toString().trim()
 
             if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val role = db.checkLogin(username, password)
+            // Dùng FirebaseHelper để đăng nhập
+            firebaseHelper.login(username, password) { role, message ->
+                if (role != null) {
+                    val editor = sharedPreferences.edit()
+                    editor.putString("username", username)
+                    editor.putString("role", role)
+                    editor.apply()
 
-            if (role != null) {
-                val editor = sharedPreferences.edit()
-                editor.putString("username", username)
-                editor.putString("role", role)
-                editor.apply()
-
-                Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show()
-                showUserInfo(layoutLogin, layoutUserInfo, username, role, tvWelcome, tvUserRole, btnManageBooks, btnManageUsers, btnSubscription)
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -95,7 +95,6 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         }
 
         btnManageUsers.setOnClickListener {
-            // Chuyển sang trang quản lý người dùng
             val intent = Intent(this, com.example.ngdungocsach.admin.ManageUsersActivity::class.java)
             startActivity(intent)
         }
@@ -106,7 +105,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         }
 
         btnSettings.setOnClickListener {
-            showSettingsDialog()
+            showFontSizeDialog()
         }
 
         btnLogout.setOnClickListener {
@@ -136,56 +135,22 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
         layoutLogin.visibility = View.GONE
         layoutUserInfo.visibility = View.VISIBLE
         tvWelcome.text = "Chào mừng bạn, $username!"
-        tvUserRole.visibility = View.GONE // ẩn dòng hiển thị role
+        tvUserRole.visibility = View.GONE
         
-        btnSubscription.visibility = View.VISIBLE // Luôn hiện nút đăng ký cho mọi User
-
         if (role == "admin") {
             btnManageBooks.visibility = View.VISIBLE
             btnManageUsers.visibility = View.VISIBLE
+            btnSubscription.visibility = View.GONE
         } else {
             btnManageBooks.visibility = View.GONE
             btnManageUsers.visibility = View.GONE
+            btnSubscription.visibility = View.VISIBLE
         }
     }
 
     private fun showLoginForm(layoutLogin: View, layoutUserInfo: View) {
         layoutLogin.visibility = View.VISIBLE
         layoutUserInfo.visibility = View.GONE
-    }
-
-    private fun showSettingsDialog() {
-        val options = arrayOf("Chủ đề (Sáng/Tối)", "Cỡ chữ")
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Cài đặt hệ thống")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> showThemeDialog()//chỉnh sửa chủ đề sáng,tối hoặc tự động
-                    1 -> showFontSizeDialog()//chỉnh sửa kích thước font chữ (demo)
-                }
-            }
-            .show()
-    }
-
-    private fun showThemeDialog() {
-        val themes = arrayOf("Sáng", "Tối", "Theo hệ thống")
-        val currentTheme = sharedPreferences.getInt("theme_mode", 2)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Chọn chủ đề")
-            .setSingleChoiceItems(themes, currentTheme) { dialog, which ->
-                val editor = sharedPreferences.edit()
-                editor.putInt("theme_mode", which)
-                editor.apply()
-// các lựa chọn chủ đề sáng tối
-                when (which) {
-                    0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                }
-                dialog.dismiss()
-            }
-            .show()
     }
 
     private fun showFontSizeDialog() {
@@ -198,9 +163,7 @@ class LoginActivity : BaseActivity() { // Đổi sang BaseActivity
                 val editor = sharedPreferences.edit()
                 editor.putInt("font_size", which)
                 editor.apply()
-                
-                Toast.makeText(this, "Cài đặt sẽ được áp dụng ngay bây giờ", Toast.LENGTH_SHORT).show()
-                recreate() // Khởi động lại activity để áp dụng font
+                recreate()
                 dialog.dismiss()
             }
             .show()

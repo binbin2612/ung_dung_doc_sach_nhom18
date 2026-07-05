@@ -6,19 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Nút quay về -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBack"
-        style="@style/Widget.Material3.Button.IconButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:icon="@drawable/ic_home"
-        app:iconTint="@color/white"
-        android:backgroundTint="@color/surface"
-        android:visibility="visible" />
-
     <!-- Layout khi chưa đăng nhập -->
     <LinearLayout
         android:id="@+id/layoutLogin"
@@ -50,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:startIconDrawable="@drawable/ic_user"
-            app:startIconTint="@color/gray"
+            app:startIconTint="@color/primary"
             app:hintEnabled="true"
             android:hint="Tên đăng nhập">
 
@@ -68,9 +55,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/gray"
+            app:passwordToggleTint="@color/primary"
             app:startIconDrawable="@drawable/ic_user"
-            app:startIconTint="@color/gray"
+            app:startIconTint="@color/primary"
             android:hint="Mật khẩu">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -165,6 +152,7 @@
                 android:layout_height="wrap_content"
                 android:text="Quản lý gói đăng ký"
                 app:icon="@drawable/ic_favorite"
+                app:iconTint="@color/on_primary"
                 android:backgroundTint="@color/primary"
                 android:textColor="@color/on_primary"/>
 
@@ -176,6 +164,7 @@
                 android:layout_marginTop="12dp"
                 android:text="Cài đặt hệ thống"
                 app:icon="@android:drawable/ic_menu_preferences"
+                app:iconTint="@color/white"
                 android:backgroundTint="@color/surface"
                 android:textColor="@color/white"/>
 
@@ -188,6 +177,8 @@
                 android:layout_marginTop="12dp"
                 android:text="Quản lý kho sách"
                 android:visibility="gone"
+                app:icon="@android:drawable/ic_menu_sort_by_size"
+                app:iconTint="@color/white"
                 android:backgroundTint="@color/surface"
                 android:textColor="@color/white"/>
 
@@ -199,6 +190,8 @@
                 android:layout_marginTop="12dp"
                 android:text="Quản lý người dùng"
                 android:visibility="gone"
+                app:icon="@android:drawable/ic_menu_mylocation"
+                app:iconTint="@color/white"
                 android:backgroundTint="@color/surface"
                 android:textColor="@color/white"/>
 
@@ -215,15 +208,28 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Chữ version ở góc dưới -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="v1.0.5"
+        android:text="2.0.5"
         android:textSize="12sp"
         android:textColor="@color/gray"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp" />
+
+    <!-- Nút quay về (Đưa xuống cuối để nằm trên cùng) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:icon="@drawable/ic_home"
+        app:iconTint="@color/white"
+        android:backgroundTint="@color/surface"
+        android:visibility="visible"
+        android:elevation="8dp" />
 
 </RelativeLayout>

@@ -4,15 +4,19 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="T-PAD library"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppReadingBook">
         <activity
             android:name="com.example.ngdungocsach.admin.AdminActivity"
@@ -42,14 +46,20 @@
             android:label="@string/title_activity_favorite"
             android:theme="@style/Theme.AppReadingBook" />
         <activity
-            android:name="com.example.ngdungocsach.user.MainActivity"
+            android:name="com.example.ngdungocsach.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.ngdungocsach.user.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.ngdungocsach.user.ReadBookActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.database.FirebaseHelper
+import com.example.ngdungocsach.database.SupabaseHelper
+import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.user.MainActivity
 import com.example.ngdungocsach.ui.BaseActivity
@@ -17,7 +19,8 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 
 class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
 
-    private lateinit var db: DatabaseHelper
+    private lateinit var firebaseHelper: FirebaseHelper
+    private lateinit var supabaseHelper: SupabaseHelper
     private var selectedImageUri: Uri? = null
     private var selectedPdfUri: Uri? = null
     private lateinit var imgBook: ImageView
@@ -30,7 +33,8 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin)
 
-        db = DatabaseHelper(this)
+        firebaseHelper = FirebaseHelper()
+        supabaseHelper = SupabaseHelper(this)
 
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
         val txtTitle = findViewById<TextInputEditText>(R.id.txtTitle)
@@ -47,7 +51,7 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
         spinnerCategory.setAdapter(adapter)
 
         btnBack.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, com.example.ngdungocsach.user.MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(intent)
             finish()
@@ -84,23 +88,83 @@ class AdminActivity : BaseActivity() { // Đổi sang BaseActivity
             val title = txtTitle.text.toString()
             val author = txtAuthor.text.toString()
             val description = txtDescription.text.toString()
-            val imagePath = selectedImageUri?.toString() ?: ""
-            val pdfPath = selectedPdfUri?.toString() ?: ""
             val category = spinnerCategory.text.toString()
 
-            if (title.isNotEmpty() && author.isNotEmpty()) {
-                db.addBook(title, author, imagePath, description, pdfPath, category)
-                Toast.makeText(this, "Thêm sách thành công", Toast.LENGTH_SHORT).show()
-                txtTitle.text?.clear()
-                txtAuthor.text?.clear()
-                txtDescription.text?.clear()
-                imgBook.setImageResource(R.drawable.white)
-                tvPdfStatus.text = "Chưa chọn file PDF"
-                selectedImageUri = null
-                selectedPdfUri = null
-                spinnerCategory.setText("", false)
-            } else {
+            if (title.isEmpty() || author.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đủ thông tin", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val progressDialog = android.app.ProgressDialog(this)
+            progressDialog.setMessage("Đang lưu sách...")
+            progressDialog.setCancelable(false)
+            progressDialog.show()
+
+            var uploadedImageUrl = ""
+            var uploadedPdfUrl = ""
+            var uploadCount = 0
+            val totalUploads = (if (selectedImageUri != null) 1 else 0) + (if (selectedPdfUri != null) 1 else 0)
+
+            fun saveBookToFirestore() {
+                val newBook = Book(
+                    id = "",
+                    title = title,
+                    author = author,
+                    image = uploadedImageUrl,
+                    description = description,
+                    pdfUrl = uploadedPdfUrl,
+                    category = category
+                )
+                firebaseHelper.addBook(newBook) { success ->
+                    progressDialog.dismiss()
+                    if (success) {
+                        Toast.makeText(this, "Thêm sách thành công", Toast.LENGTH_SHORT).show()
+                        txtTitle.text?.clear()
+                        txtAuthor.text?.clear()
+                        txtDescription.text?.clear()
+                        imgBook.setImageResource(R.drawable.white)
+                        tvPdfStatus.text = "Chưa chọn file PDF"
+                        selectedImageUri = null
+                        selectedPdfUri = null
+                        spinnerCategory.setText("", false)
+                    } else {
+                        Toast.makeText(this, "Thêm sách thất bại", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            if (totalUploads == 0) {
+                saveBookToFirestore()
+            } else {
+                var isFailed = false
+                selectedImageUri?.let { uri ->
+                    supabaseHelper.uploadFile(uri, "book_images") { url ->
+                        if (isFailed) return@uploadFile
+                        uploadCount++
+                        if (url != null) {
+                            uploadedImageUrl = url
+                            if (uploadCount == totalUploads) saveBookToFirestore()
+                        } else {
+                            isFailed = true
+                            progressDialog.dismiss()
+                            Toast.makeText(this, "Lỗi upload Ảnh lên Supabase", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+                selectedPdfUri?.let { uri ->
+                    supabaseHelper.uploadFile(uri, "book_pdfs") { url ->
+                        if (isFailed) return@uploadFile
+                        uploadCount++
+                        if (url != null) {
+                            uploadedPdfUrl = url
+                            if (uploadCount == totalUploads) saveBookToFirestore()
+                        } else {
+                            isFailed = true
+                            progressDialog.dismiss()
+                            Toast.makeText(this, "Lỗi upload PDF lên Supabase", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
         }
     }

@@ -13,6 +13,9 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 kotlin = "2.0.21"
 composeBom = "2024.10.00"
+googleServices = "4.4.2"
+firebaseBom = "33.7.0"
+androidPdfViewer = "3.1.0-beta.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,8 +37,23 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+# Firebase BOM để quản lý phiên bản đồng bộ
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+# Firebase Analytics (Khuyên dùng)
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+# Firebase Authentication (Quản lý đăng nhập)
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
+# Cloud Firestore (Database dạng NoSQL hiện đại)
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+# Realtime Database (Nếu bạn muốn dùng database đồng bộ thời gian thực)
+firebase-database = { group = "com.google.firebase", name = "firebase-database" }
+# Firebase Storage (Lưu trữ ảnh bìa sách và file PDF)
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+pdf-viewer = { group = "com.github.barteksc", name = "AndroidPdfViewer", version.ref = "androidPdfViewer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# Plugin Google Services để kết nối App với Firebase
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

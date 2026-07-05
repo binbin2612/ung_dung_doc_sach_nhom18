@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.adapter.BookAdapter
 import com.example.ngdungocsach.auth.LoginActivity
-import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.database.FirebaseHelper
 import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.textfield.TextInputEditText
@@ -25,7 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 class MainActivity : BaseActivity() { // Đổi sang BaseActivity
 
     private lateinit var rvBooks: RecyclerView
-    private lateinit var db: DatabaseHelper
+    private lateinit var firebaseHelper: FirebaseHelper
     private var fullBookList = ArrayList<Book>()
     private lateinit var searchView: TextInputEditText // Keep original name or use edtSearch
     private lateinit var edtSearch: TextInputEditText
@@ -37,7 +37,7 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        db = DatabaseHelper(this)
+        firebaseHelper = FirebaseHelper()
         rvBooks = findViewById(R.id.rvBooks)
         edtSearch = findViewById(R.id.edtSearch)
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage)
@@ -101,16 +101,33 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
     }
 
     private fun loadBooks() {
-        fullBookList = db.getAllBooks()
-        applyFilters()
+        firebaseHelper.getAllBooks { books ->
+            fullBookList = ArrayList(books)
+            applyFilters()
+
+            // Tự động dọn dẹp data lỗi (chỉ chạy ngầm)
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            if (sharedPreferences.getString("role", "") == "admin") {
+                firebaseHelper.cleanInvalidUris { count ->
+                    if (count > 0) {
+                        android.util.Log.d("MainActivity", "Đã dọn dẹp $count sách có URI lỗi")
+                    }
+                }
+            }
+        }
     }
 
     private fun applyFilters() {
         val query = edtSearch.text.toString().lowercase().trim()
         val selectedCategory = spinnerCategoryFilter.text.toString().trim()
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val role = sharedPreferences.getString("role", null)
 
         val filteredList = ArrayList<Book>()
         for (book in fullBookList) {
+            // Nếu không phải Admin, chỉ hiển thị sách không bị ẩn
+            if (role != "admin" && book.isHidden) continue
+
             val matchesQuery = book.title.lowercase().contains(query) || book.author.lowercase().contains(query)
             
             // So sánh chính xác hoặc chấp nhận "Tất cả"

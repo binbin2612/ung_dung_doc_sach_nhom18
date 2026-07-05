@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.adapter.BookAdapter
-import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.database.FirebaseHelper
 import com.google.android.material.button.MaterialButton
 
 class FavoriteActivity : AppCompatActivity() {
 
     private lateinit var rvFavorite: RecyclerView
     private lateinit var tvNoFavorite: TextView
-    private lateinit var db: DatabaseHelper
+    private lateinit var firebaseHelper: FirebaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +27,7 @@ class FavoriteActivity : AppCompatActivity() {
         rvFavorite = findViewById(R.id.rvFavorite)
         tvNoFavorite = findViewById(R.id.tvNoFavorite)
 
-        db = DatabaseHelper(this)
+        firebaseHelper = FirebaseHelper()
 
         rvFavorite.layoutManager = LinearLayoutManager(this)
         loadFavorites()
@@ -50,16 +50,19 @@ class FavoriteActivity : AppCompatActivity() {
         val username = sharedPreferences.getString("username", null)
 
         if (username != null) {
-            val favoriteList = db.getFavoriteBooks(username)
-            
-            if (favoriteList.isEmpty()) {
-                rvFavorite.visibility = View.GONE
-                tvNoFavorite.visibility = View.VISIBLE
-                tvNoFavorite.text = "Chưa có sách yêu thích"
-            } else {
-                rvFavorite.visibility = View.VISIBLE
-                tvNoFavorite.visibility = View.GONE
-                rvFavorite.adapter = BookAdapter(favoriteList)
+            firebaseHelper.getFavoriteBooks(username) { favoriteList ->
+                // Lọc bỏ sách bị ẩn (nếu admin ẩn sách đã nằm trong list yêu thích của user)
+                val visibleBooks = favoriteList.filter { !it.isHidden }.toMutableList()
+                
+                if (visibleBooks.isEmpty()) {
+                    rvFavorite.visibility = View.GONE
+                    tvNoFavorite.visibility = View.VISIBLE
+                    tvNoFavorite.text = "Chưa có sách yêu thích"
+                } else {
+                    rvFavorite.visibility = View.VISIBLE
+                    tvNoFavorite.visibility = View.GONE
+                    rvFavorite.adapter = BookAdapter(visibleBooks)
+                }
             }
         } else {
             rvFavorite.visibility = View.GONE

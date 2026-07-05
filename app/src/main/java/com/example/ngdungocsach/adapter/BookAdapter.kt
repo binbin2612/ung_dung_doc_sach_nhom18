@@ -11,15 +11,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import android.util.Log
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.admin.EditBookActivity
-import com.example.ngdungocsach.database.DatabaseHelper
+import com.example.ngdungocsach.database.FirebaseHelper
 import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.user.BookDetailActivity
 import com.google.android.material.button.MaterialButton
+import com.bumptech.glide.Glide
 
 class BookAdapter(private var bookList: MutableList<Book>) :
     RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+
+    private val firebaseHelper = FirebaseHelper()
 
     class BookViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgBook: ImageView = itemView.findViewById(R.id.imgBook)
@@ -29,6 +33,7 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         val btnFavorite: MaterialButton = itemView.findViewById(R.id.btnFavorite)
         val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDelete)
         val btnEdit: MaterialButton = itemView.findViewById(R.id.btnEdit)
+        val btnHide: MaterialButton = itemView.findViewById(R.id.btnHide)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
@@ -40,7 +45,7 @@ class BookAdapter(private var bookList: MutableList<Book>) :
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         val book = bookList[position]
         val context = holder.itemView.context
-        val db = DatabaseHelper(context)
+        val firebaseHelper = FirebaseHelper()
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", null)
         val role = sharedPreferences.getString("role", null)
@@ -49,20 +54,42 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         holder.tvAuthorName.text = book.author
         holder.tvCategoryName.text = book.category
         
-        try {
-            holder.imgBook.setImageURI(Uri.parse(book.image))
-        } catch (e: Exception) {
+        if (book.image.isNotEmpty() && book.image.startsWith("http")) {
+            Glide.with(context)
+                .load(book.image)
+                .placeholder(R.drawable.white)
+                .error(R.drawable.white)
+                .into(holder.imgBook)
+        } else {
             holder.imgBook.setImageResource(R.drawable.white)
+            if (book.image.startsWith("content://")) {
+                Log.w("BookAdapter", "Local URI detected in database: ${book.image}")
+            }
         }
 
         // Xử lý hiển thị dựa trên vai trò
         if (role == "admin") {
             holder.btnDelete.visibility = View.VISIBLE
             holder.btnEdit.visibility = View.VISIBLE
+            holder.btnHide.visibility = View.VISIBLE
             holder.btnFavorite.visibility = View.GONE
+
+            updateHideIcon(holder.btnHide, book.isHidden)
+
+            holder.btnHide.setOnClickListener {
+                val newHideStatus = !book.isHidden
+                firebaseHelper.toggleHideBook(book.id, newHideStatus) { success ->
+                    if (success) {
+                        book.isHidden = newHideStatus
+                        updateHideIcon(holder.btnHide, book.isHidden)
+                        val msg = if (newHideStatus) "Đã ẩn sách" else "Đã hiện sách"
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
             
             holder.btnDelete.setOnClickListener {
-                showDeleteDialog(context, db, book, position)
+                showDeleteDialog(context, firebaseHelper, book, position)
             }
             
             holder.btnEdit.setOnClickListener {
@@ -71,6 +98,9 @@ class BookAdapter(private var bookList: MutableList<Book>) :
                 intent.putExtra("title", book.title)
                 intent.putExtra("author", book.author)
                 intent.putExtra("image", book.image)
+                intent.putExtra("description", book.description)
+                intent.putExtra("pdfUrl", book.pdfUrl)
+                intent.putExtra("category", book.category)
                 context.startActivity(intent)
             }
         } else if (username != null && role == "user") {
@@ -78,15 +108,21 @@ class BookAdapter(private var bookList: MutableList<Book>) :
             holder.btnDelete.visibility = View.GONE
             holder.btnEdit.visibility = View.GONE
             
-            updateFavoriteIcon(holder.btnFavorite, db.isFavorite(username, book.id))
+            firebaseHelper.isFavorite(username, book.id) { isFav ->
+                updateFavoriteIcon(holder.btnFavorite, isFav)
+            }
 
             holder.btnFavorite.setOnClickListener {
-                if (db.isFavorite(username, book.id)) {
-                    db.removeFavorite(username, book.id)
-                    updateFavoriteIcon(holder.btnFavorite, false)
-                } else {
-                    db.addFavorite(username, book.id)
-                    updateFavoriteIcon(holder.btnFavorite, true)
+                firebaseHelper.isFavorite(username, book.id) { isFav ->
+                    if (isFav) {
+                        firebaseHelper.removeFavorite(username, book.id) { success ->
+                            if (success) updateFavoriteIcon(holder.btnFavorite, false)
+                        }
+                    } else {
+                        firebaseHelper.addFavorite(username, book.id) { success ->
+                            if (success) updateFavoriteIcon(holder.btnFavorite, true)
+                        }
+                    }
                 }
             }
         } else {
@@ -105,22 +141,34 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         }
     }
 
-    private fun showDeleteDialog(context: Context, db: DatabaseHelper, book: Book, position: Int) {
+    private fun showDeleteDialog(context: Context, firebaseHelper: FirebaseHelper, book: Book, position: Int) {
         AlertDialog.Builder(context)
             .setTitle("Xóa sách")
             .setMessage("Bạn có chắc chắn muốn xóa cuốn sách '${book.title}' này không?")
             .setPositiveButton("Xóa") { _, _ ->
-                if (db.deleteBook(book.id)) {
-                    bookList.removeAt(position)
-                    notifyItemRemoved(position)
-                    notifyItemRangeChanged(position, bookList.size)
-                    Toast.makeText(context, "Đã xóa sách", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Lỗi khi xóa sách", Toast.LENGTH_SHORT).show()
+                firebaseHelper.deleteBook(book.id) { success ->
+                    if (success) {
+                        bookList.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, bookList.size)
+                        Toast.makeText(context, "Đã xóa sách", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Lỗi khi xóa sách", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
             .setNegativeButton("Hủy", null)
             .show()
+    }
+
+    private fun updateHideIcon(button: MaterialButton, isHidden: Boolean) {
+        if (isHidden) {
+            button.setIconResource(R.drawable.ic_show)
+            button.alpha = 0.5f
+        } else {
+            button.setIconResource(R.drawable.ic_hide)
+            button.alpha = 1.0f
+        }
     }
 
     private fun updateFavoriteIcon(button: MaterialButton, isFavorite: Boolean) {

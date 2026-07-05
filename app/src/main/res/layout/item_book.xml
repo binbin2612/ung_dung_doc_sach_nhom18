@@ -91,6 +91,16 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnHide"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:icon="@drawable/ic_hide"
+                app:iconTint="@color/gray"
+                android:visibility="gone"
+                android:contentDescription="Hide" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
                 style="@style/Widget.Material3.Button.IconButton"
                 android:layout_width="36dp"

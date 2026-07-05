@@ -11,16 +11,6 @@ import com.example.ngdungocsach.R
 open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        
-        // Áp dụng Theme
-        val themeMode = sharedPreferences.getInt("theme_mode", 2) // Mặc định là Theo hệ thống (2)
-        when (themeMode) {
-            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-
         super.onCreate(savedInstanceState)
     }
 

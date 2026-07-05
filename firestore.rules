@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Note: The current app uses a custom login system instead of Firebase Auth.
+    // To properly secure Firestore, it is HIGHLY RECOMMENDED to migrate to Firebase Authentication.
+
+    // Books: Anyone can read, only admin should write
+    match /books/{bookId} {
+      allow read: if true;
+      allow write: if true; // Restrict this to admin once Firebase Auth is implemented
+    }
+
+    // Users: Profiles and subscription info
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Favorites: Bookmarks for users
+    match /favorites/{favoriteId} {
+      allow read, write: if true;
+    }
+  }
+}
