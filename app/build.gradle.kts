@@ -63,11 +63,10 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
-
-
-    // 1. Thư viện cho Firebase (Đăng nhập)
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
-    implementation("com.google.firebase:firebase-auth-ktx")
+    
+    // Google & Facebook Login
+    implementation(libs.play.services.auth)
+    implementation(libs.facebook.login)
 
     // 2. Thư viện cho Supabase (Lưu file PDF)
     implementation("io.github.jan-tennert.supabase:storage-kt:2.5.2")

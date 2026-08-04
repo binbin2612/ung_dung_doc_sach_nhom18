@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.example.ngdungocsach.R
 import com.example.ngdungocsach.database.FirebaseHelper
 import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
+import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,6 +29,7 @@ class SubscriptionActivity : BaseActivity() {
 
         firebaseHelper = FirebaseHelper()
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val uid = sharedPreferences.getString("uid", null)
         val username = sharedPreferences.getString("username", null)
         val role = sharedPreferences.getString("role", null)
 
@@ -42,7 +45,7 @@ class SubscriptionActivity : BaseActivity() {
         txtSubscriptionStatus = findViewById(R.id.txtSubscriptionStatus)
         btnCancelSubscription = findViewById(R.id.btnCancelSubscription)
 
-        updateSubscriptionUI(username)
+        updateSubscriptionUI(uid)
 
         btnBack.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -52,41 +55,27 @@ class SubscriptionActivity : BaseActivity() {
         }
 
         btnSubscribeMonth.setOnClickListener {
-            if (username != null) {
-                firebaseHelper.updateSubscription(username, 30) { success ->
-                    if (success) {
-                        Toast.makeText(this, "Đăng ký Gói Tháng thành công (30 ngày)!", Toast.LENGTH_SHORT).show()
-                        updateSubscriptionUI(username)
-                    } else {
-                        Toast.makeText(this, "Lỗi khi đăng ký gói", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            if (uid != null && username != null) {
+                showPaymentDialog(uid, username, "Gói Premium Tháng", 1000, 30)
             }
         }
 
         btnSubscribeYear.setOnClickListener {
-            if (username != null) {
-                firebaseHelper.updateSubscription(username, 365) { success ->
-                    if (success) {
-                        Toast.makeText(this, "Đăng ký Gói Năm thành công (365 ngày)!", Toast.LENGTH_SHORT).show()
-                        updateSubscriptionUI(username)
-                    } else {
-                        Toast.makeText(this, "Lỗi khi đăng ký gói", Toast.LENGTH_SHORT).show()
-                    }
-                }
+            if (uid != null && username != null) {
+                showPaymentDialog(uid, username, "Gói Premium Năm", 5000, 365)
             }
         }
 
         btnCancelSubscription.setOnClickListener {
-            if (username != null) {
+            if (uid != null) {
                 AlertDialog.Builder(this)
                     .setTitle("Hủy đăng ký")
                     .setMessage("Bạn có chắc chắn muốn hủy gói đăng ký hiện tại không?")
                     .setPositiveButton("Hủy gói") { _, _ ->
-                        firebaseHelper.cancelSubscription(username) { success ->
+                        firebaseHelper.cancelSubscription(uid) { success ->
                             if (success) {
                                 Toast.makeText(this, "Đã hủy gói đăng ký", Toast.LENGTH_SHORT).show()
-                                updateSubscriptionUI(username)
+                                updateSubscriptionUI(uid)
                             } else {
                                 Toast.makeText(this, "Lỗi khi hủy gói", Toast.LENGTH_SHORT).show()
                             }
@@ -98,14 +87,82 @@ class SubscriptionActivity : BaseActivity() {
         }
     }
 
-    private fun updateSubscriptionUI(username: String?) {
-        if (username == null) {
+    private fun showPaymentDialog(uid: String, username: String, packageName: String, amount: Long, days: Int) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_payment_qr, null)
+        val tvAmount = dialogView.findViewById<TextView>(R.id.tvPaymentAmount)
+        val tvPackage = dialogView.findViewById<TextView>(R.id.tvPaymentPackage)
+        val imgQr = dialogView.findViewById<ImageView>(R.id.imgPaymentQr)
+        val btnBank = dialogView.findViewById<MaterialButton>(R.id.btnPayBank)
+        val btnMomo = dialogView.findViewById<MaterialButton>(R.id.btnPayMomo)
+        val btnConfirm = dialogView.findViewById<MaterialButton>(R.id.btnConfirmPaid)
+
+        tvAmount.text = "Số tiền: %,d VNĐ".format(amount)
+        tvPackage.text = "Gói: $packageName"
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        firebaseHelper.getPaymentSettings { settings ->
+            val customMomoQr = settings?.get("momo_qr")?.toString()
+            val customBankQr = settings?.get("bank_qr")?.toString()
+
+            btnBank.setOnClickListener {
+                val qrUrl = if (!customBankQr.isNullOrBlank()) {
+                    customBankQr
+                } else {
+                    "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=BANK_PAYMENT_FOR_${username}_PACKAGE_${packageName}"
+                }
+                Glide.with(this).load(qrUrl).placeholder(R.drawable.white).into(imgQr)
+                Toast.makeText(this, "Đã chọn Ngân hàng. Vui lòng quét mã QR bên dưới.", Toast.LENGTH_SHORT).show()
+                imgQr.visibility = View.VISIBLE
+                btnConfirm.visibility = View.VISIBLE
+            }
+
+            btnMomo.setOnClickListener {
+                val qrUrl = if (!customMomoQr.isNullOrBlank()) {
+                    customMomoQr
+                } else {
+                    "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=MOMO_PAYMENT_FOR_${username}_PACKAGE_${packageName}"
+                }
+                Glide.with(this).load(qrUrl).placeholder(R.drawable.white).into(imgQr)
+                Toast.makeText(this, "Đã chọn MoMo. Vui lòng quét mã QR bên dưới.", Toast.LENGTH_SHORT).show()
+                imgQr.visibility = View.VISIBLE
+                btnConfirm.visibility = View.VISIBLE
+            }
+        }
+
+        btnConfirm.setOnClickListener {
+            firebaseHelper.updateSubscription(uid, days) { success ->
+                if (success) {
+                    val payment = com.example.ngdungocsach.model.Payment(
+                        username = username,
+                        packageName = packageName,
+                        amount = amount,
+                        timestamp = System.currentTimeMillis()
+                    )
+                    firebaseHelper.savePayment(payment) { _ ->
+                        Toast.makeText(this, "Thanh toán thành công! Gói của bạn đã được gia hạn.", Toast.LENGTH_LONG).show()
+                        updateSubscriptionUI(uid)
+                        dialog.dismiss()
+                    }
+                } else {
+                    Toast.makeText(this, "Lỗi khi cập nhật gói", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun updateSubscriptionUI(uid: String?) {
+        if (uid == null) {
             txtSubscriptionStatus.text = "Vui lòng đăng nhập để xem trạng thái"
             btnCancelSubscription.visibility = View.GONE
             return
         }
 
-        firebaseHelper.getSubscriptionExpiry(username) { expiry ->
+        firebaseHelper.getSubscriptionExpiry(uid) { expiry ->
             val currentTime = System.currentTimeMillis()
             if (expiry > currentTime) {
                 btnCancelSubscription.visibility = View.VISIBLE

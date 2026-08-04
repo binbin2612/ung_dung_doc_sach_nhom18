@@ -65,10 +65,52 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="6dp"
             android:background="@drawable/bg_category_tag"
-            android:textColor="@color/primary"
+            android:textColor="@color/white"
             android:textSize="13sp"
             android:textStyle="bold"
             android:text="Khác"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:id="@+id/txtViewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:text="Lượt xem: 0"
+                app:drawableStartCompat="@drawable/ic_hide"
+                android:drawablePadding="6dp"
+                app:drawableTint="@color/white"
+                android:layout_marginEnd="24dp"/>
+
+            <TextView
+                android:id="@+id/txtFavoriteCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:text="Yêu thích: 0"
+                app:drawableStartCompat="@drawable/ic_favorite"
+                app:drawableTint="@color/white"
+                android:drawablePadding="6dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/primary"
+            android:textSize="14sp"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            android:text="Tiến độ: Trang 1"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnReadBook"
@@ -147,7 +189,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     app:icon="@drawable/ic_favorite"
-                    app:iconTint="@color/gray"
+                    app:iconTint="@color/white"
                     android:tooltipText="Yêu thích"/>
 
                 <com.google.android.material.button.MaterialButton
@@ -166,10 +208,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nội dung mô tả sách đang được cập nhật..."
-            android:textColor="@color/on_surface_variant"
+            android:textColor="@color/white"
             android:textSize="15sp"
             android:lineSpacingExtra="6dp"
-            android:alpha="0.8"/>
+            android:alpha="1.0"/>
 
     </LinearLayout>
 </ScrollView>

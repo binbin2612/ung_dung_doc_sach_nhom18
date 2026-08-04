@@ -34,6 +34,7 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDelete)
         val btnEdit: MaterialButton = itemView.findViewById(R.id.btnEdit)
         val btnHide: MaterialButton = itemView.findViewById(R.id.btnHide)
+        val tvProgress: TextView = itemView.findViewById(R.id.tvProgress)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
@@ -47,12 +48,26 @@ class BookAdapter(private var bookList: MutableList<Book>) :
         val context = holder.itemView.context
         val firebaseHelper = FirebaseHelper()
         val sharedPreferences = context.getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("username", null)
+        val uid = sharedPreferences.getString("uid", null)
         val role = sharedPreferences.getString("role", null)
 
         holder.tvBookName.text = book.title
         holder.tvAuthorName.text = book.author
         holder.tvCategoryName.text = book.category
+        
+        // Hiển thị tiến độ đọc
+        if (uid != null) {
+            firebaseHelper.getReadingProgress(uid, book.id) { lastPage ->
+                if (lastPage > 0) {
+                    holder.tvProgress.visibility = View.VISIBLE
+                    holder.tvProgress.text = "Đã đọc: Trang ${lastPage + 1}"
+                } else {
+                    holder.tvProgress.visibility = View.GONE
+                }
+            }
+        } else {
+            holder.tvProgress.visibility = View.GONE
+        }
         
         if (book.image.isNotEmpty() && book.image.startsWith("http")) {
             Glide.with(context)
@@ -103,23 +118,23 @@ class BookAdapter(private var bookList: MutableList<Book>) :
                 intent.putExtra("category", book.category)
                 context.startActivity(intent)
             }
-        } else if (username != null && role == "user") {
+        } else if (uid != null && role == "user") {
             holder.btnFavorite.visibility = View.VISIBLE
             holder.btnDelete.visibility = View.GONE
             holder.btnEdit.visibility = View.GONE
             
-            firebaseHelper.isFavorite(username, book.id) { isFav ->
+            firebaseHelper.isFavorite(uid, book.id) { isFav ->
                 updateFavoriteIcon(holder.btnFavorite, isFav)
             }
 
             holder.btnFavorite.setOnClickListener {
-                firebaseHelper.isFavorite(username, book.id) { isFav ->
+                firebaseHelper.isFavorite(uid, book.id) { isFav ->
                     if (isFav) {
-                        firebaseHelper.removeFavorite(username, book.id) { success ->
+                        firebaseHelper.removeFavorite(uid, book.id) { success ->
                             if (success) updateFavoriteIcon(holder.btnFavorite, false)
                         }
                     } else {
-                        firebaseHelper.addFavorite(username, book.id) { success ->
+                        firebaseHelper.addFavorite(uid, book.id) { success ->
                             if (success) updateFavoriteIcon(holder.btnFavorite, true)
                         }
                     }
@@ -162,20 +177,24 @@ class BookAdapter(private var bookList: MutableList<Book>) :
     }
 
     private fun updateHideIcon(button: MaterialButton, isHidden: Boolean) {
+        button.alpha = 1.0f 
         if (isHidden) {
             button.setIconResource(R.drawable.ic_show)
-            button.alpha = 0.5f
+            button.setIconTintResource(R.color.primary) // Hiện màu xanh rõ nét khi đang ẩn
         } else {
             button.setIconResource(R.drawable.ic_hide)
-            button.alpha = 1.0f
+            button.setIconTintResource(R.color.white) // Trắng 100%
         }
     }
 
     private fun updateFavoriteIcon(button: MaterialButton, isFavorite: Boolean) {
+        button.alpha = 1.0f
         if (isFavorite) {
             button.setIconResource(R.drawable.ic_heart_red)
+            button.iconTint = null // Giữ nguyên màu đỏ gốc của file vector
         } else {
             button.setIconResource(R.drawable.ic_heart_outline)
+            button.setIconTintResource(R.color.white) // Trắng 100%
         }
     }
 

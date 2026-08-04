@@ -141,7 +141,9 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_home"
-                app:tint="@color/primary" />
+                app:tint="@color/white"
+                android:scaleType="centerInside"
+                android:padding="16dp" />
 
             <ImageButton
                 android:id="@+id/Love_FloatingActionButton"
@@ -150,7 +152,9 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_favorite"
-                app:tint="@color/gray" />
+                app:tint="@color/white"
+                android:scaleType="centerInside"
+                android:padding="16dp" />
 
             <ImageButton
                 android:id="@+id/Login_FloatingActionButton"
@@ -159,7 +163,9 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_user"
-                app:tint="@color/gray" />
+                app:tint="@color/white"
+                android:scaleType="centerInside"
+                android:padding="16dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

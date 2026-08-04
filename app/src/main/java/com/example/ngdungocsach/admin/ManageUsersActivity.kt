@@ -63,10 +63,10 @@ class ManageUsersActivity : BaseActivity() {
 
             rvUsers.adapter = UserAdapter(
                 userList,
-                onDeleteClick = { username -> showDeleteDialog(username) },
+                onDeleteClick = { user -> showDeleteDialog(user) },
                 onBlockClick = { user ->
                     val newState = !user.isBlocked
-                    firebaseHelper.toggleBlockUser(user.username, newState) { success ->
+                    firebaseHelper.toggleBlockUser(user.uid, newState) { success ->
                         if (success) {
                             Toast.makeText(this, if (newState) "Đã chặn ${user.username}" else "Đã mở chặn", Toast.LENGTH_SHORT).show()
                             loadUsers()
@@ -75,7 +75,7 @@ class ManageUsersActivity : BaseActivity() {
                 },
                 onHideClick = { user ->
                     val newState = !user.isHidden
-                    firebaseHelper.toggleHideUser(user.username, newState) { success ->
+                    firebaseHelper.toggleHideUser(user.uid, newState) { success ->
                         if (success) {
                             Toast.makeText(this, if (newState) "Đã ẩn ${user.username}" else "Đã hiện lại", Toast.LENGTH_SHORT).show()
                             loadUsers()
@@ -86,17 +86,17 @@ class ManageUsersActivity : BaseActivity() {
         }
     }
 
-    private fun showDeleteDialog(username: String) {
-        if (username == "admin") {
+    private fun showDeleteDialog(user: User) {
+        if (user.username == "admin") {
             Toast.makeText(this, "Không thể xóa tài khoản Admin gốc", Toast.LENGTH_SHORT).show()
             return
         }
 
         AlertDialog.Builder(this)
             .setTitle("Xóa người dùng")
-            .setMessage("Bạn có chắc chắn muốn xóa tài khoản '$username' không?")
+            .setMessage("Bạn có chắc chắn muốn xóa tài khoản '${user.username}' không?")
             .setPositiveButton("Xóa") { _, _ ->
-                firebaseHelper.deleteAccount(username) { success ->
+                firebaseHelper.deleteAccount(user.uid) { success ->
                     if (success) {
                         Toast.makeText(this, "Đã xóa người dùng", Toast.LENGTH_SHORT).show()
                         loadUsers()

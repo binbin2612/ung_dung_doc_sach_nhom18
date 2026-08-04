@@ -47,10 +47,11 @@ class FavoriteActivity : AppCompatActivity() {
 
     private fun loadFavorites() {
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val username = sharedPreferences.getString("username", null)
+        val uid = sharedPreferences.getString("uid", null)
 
-        if (username != null) {
-            firebaseHelper.getFavoriteBooks(username) { favoriteList ->
+        if (uid != null) {
+            firebaseHelper.getFavoriteBooks(uid) { favoriteList ->
+                if (isFinishing || isDestroyed) return@getFavoriteBooks
                 // Lọc bỏ sách bị ẩn (nếu admin ẩn sách đã nằm trong list yêu thích của user)
                 val visibleBooks = favoriteList.filter { !it.isHidden }.toMutableList()
                 

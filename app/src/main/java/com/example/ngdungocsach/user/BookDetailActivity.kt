@@ -17,11 +17,13 @@ import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.button.MaterialButton
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.ListenerRegistration
 
-class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
+class BookDetailActivity : BaseActivity() {
 
     private lateinit var firebaseHelper: FirebaseHelper
     private var bookId: String = ""
+    private var bookListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +36,9 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
         val txtAuthor = findViewById<TextView>(R.id.txtAuthor)
         val txtCategory = findViewById<TextView>(R.id.txtCategory)
         val txtDescription = findViewById<TextView>(R.id.txtDescription)
+        val txtProgress = findViewById<TextView>(R.id.txtProgress)
+        val txtViewCount = findViewById<TextView>(R.id.txtViewCount)
+        val txtFavoriteCount = findViewById<TextView>(R.id.txtFavoriteCount)
         val btnBack = findViewById<MaterialButton>(R.id.btnBack)
         val btnFavorite = findViewById<MaterialButton>(R.id.btnFavorite)
         val btnEditDescription = findViewById<MaterialButton>(R.id.btnEditDescription)
@@ -46,25 +51,45 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
         
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val role = sharedPreferences.getString("role", null)
-        val username = sharedPreferences.getString("username", null)
+        val uid = sharedPreferences.getString("uid", null)
 
         if (bookId.isNotEmpty()) {
+            // Tăng lượt xem (chỉ cho user không phải admin)
+            if (role != "admin" && uid != null) {
+                firebaseHelper.incrementViewCount(uid, bookId)
+            }
+
+            // Hiển thị tiến độ đọc
+            if (uid != null) {
+                firebaseHelper.getReadingProgress(uid, bookId) { lastPage ->
+                    if (lastPage > 0) {
+                        txtProgress.visibility = View.VISIBLE
+                        txtProgress.text = "Tiến độ: Trang ${lastPage + 1}"
+                        btnReadBook.text = "Tiếp tục đọc (Trang ${lastPage + 1})"
+                    } else {
+                        txtProgress.visibility = View.GONE
+                        btnReadBook.text = "Bắt đầu đọc"
+                    }
+                }
+            }
+
             // Kiểm tra trạng thái yêu thích
-            if (username != null) {
-                firebaseHelper.isFavorite(username, bookId) { isFav ->
+            if (uid != null) {
+                firebaseHelper.isFavorite(uid, bookId) { isFav ->
                     updateFavoriteUI(btnFavorite, isFav)
                 }
             }
 
             btnFavorite.setOnClickListener {
-                if (username == null) {
+                if (uid == null) {
                     Toast.makeText(this, "Vui lòng đăng nhập để thêm vào yêu thích", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 
-                firebaseHelper.toggleFavorite(username, bookId) { success ->
+                firebaseHelper.toggleFavorite(uid, bookId) { success ->
                     if (success) {
-                        firebaseHelper.isFavorite(username, bookId) { isFav ->
+                        firebaseHelper.isFavorite(uid, bookId) { isFav ->
+                            if (isFinishing || isDestroyed) return@isFavorite
                             updateFavoriteUI(btnFavorite, isFav)
                             val msg = if (isFav) "Đã thêm vào yêu thích" else "Đã xóa khỏi yêu thích"
                             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
@@ -73,7 +98,8 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
                 }
             }
 
-            firebaseHelper.getBookById(bookId) { book ->
+            bookListener = firebaseHelper.getBookById(bookId) { book ->
+                if (isFinishing || isDestroyed) return@getBookById
                 if (book != null) {
                     // Nếu sách bị ẩn và không phải admin, không cho xem chi tiết
                     if (book.isHidden && role != "admin") {
@@ -86,6 +112,9 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
                     txtAuthor.text = book.author
                     txtCategory.text = "Thể loại: ${book.category}"
                     txtDescription.text = if (book.description.isNotEmpty()) book.description else "Nội dung mô tả sách đang được cập nhật..."
+                    
+                    txtViewCount.text = "Lượt xem: ${book.viewCount}"
+                    txtFavoriteCount.text = "Yêu thích: ${book.favoriteCount}"
 
                     if (book.image.isNotEmpty() && book.image.startsWith("http")) {
                         Glide.with(this@BookDetailActivity)
@@ -102,8 +131,9 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
                         btnReadBook.setOnClickListener {
                             if (role == "admin") {
                                 openPdf(book.pdfUrl)
-                            } else if (username != null) {
-                                firebaseHelper.getSubscriptionExpiry(username) { expiry ->
+                            } else if (uid != null) {
+                                firebaseHelper.getSubscriptionExpiry(uid) { expiry ->
+                                    if (isFinishing || isDestroyed) return@getSubscriptionExpiry
                                     if (expiry > System.currentTimeMillis()) {
                                         openPdf(book.pdfUrl)
                                     } else {
@@ -149,18 +179,20 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
     }
 
     private fun updateFavoriteUI(btn: MaterialButton, isFav: Boolean) {
+        btn.alpha = 1.0f
         if (isFav) {
             btn.setIconResource(R.drawable.ic_favorite)
-            btn.setIconTintResource(R.color.error) // Màu đỏ
+            btn.setIconTintResource(R.color.error)
         } else {
             btn.setIconResource(R.drawable.ic_heart_outline)
-            btn.setIconTintResource(R.color.gray)
+            btn.setIconTintResource(R.color.white) // Đổi từ gray sang white
         }
     }
 
     private fun openPdf(pdfUrl: String) {
         val intent = Intent(this, ReadBookActivity::class.java)
         intent.putExtra("pdfUrl", pdfUrl)
+        intent.putExtra("bookId", bookId)
         startActivity(intent)
     }
 
@@ -179,7 +211,8 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
     private fun showEditDescriptionDialog(tvDescription: TextView) {
         val input = EditText(this)
         
-        firebaseHelper.getBookById(bookId) { book ->
+        firebaseHelper.getBookByIdOnce(bookId) { book ->
+            if (isFinishing || isDestroyed) return@getBookByIdOnce
             input.setText(book?.description)
             input.setTextColor(resources.getColor(R.color.black, theme))
             
@@ -201,6 +234,7 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
                     book?.let {
                         val updatedBook = it.copy(description = newDescription)
                         firebaseHelper.updateBook(updatedBook) { success ->
+                            if (isFinishing || isDestroyed) return@updateBook
                             if (success) {
                                 tvDescription.text = newDescription
                                 Toast.makeText(this, "Đã cập nhật mô tả", Toast.LENGTH_SHORT).show()
@@ -221,6 +255,7 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
             .setMessage("Bạn có chắc chắn muốn xóa cuốn sách này không?")
             .setPositiveButton("Xóa") { _, _ ->
                 firebaseHelper.deleteBook(bookId) { success ->
+                    if (isFinishing || isDestroyed) return@deleteBook
                     if (success) {
                         Toast.makeText(this, "Đã xóa sách", Toast.LENGTH_SHORT).show()
                         finish()
@@ -231,5 +266,10 @@ class BookDetailActivity : BaseActivity() { // Đổi sang BaseActivity
             }
             .setNegativeButton("Hủy", null)
             .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        bookListener?.remove()
     }
 }

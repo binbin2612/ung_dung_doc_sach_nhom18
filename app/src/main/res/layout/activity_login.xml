@@ -20,7 +20,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/ic_user"
-            app:tint="@color/primary"
+            app:tint="@color/white"
             android:layout_marginBottom="24dp"/>
 
         <TextView
@@ -39,14 +39,14 @@
             app:startIconDrawable="@drawable/ic_user"
             app:startIconTint="@color/primary"
             app:hintEnabled="true"
-            android:hint="Tên đăng nhập">
+            android:hint="Email">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtUser"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:inputType="textPersonName" />
+                android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -77,6 +77,74 @@
             android:text="Đăng nhập"
             android:backgroundTint="@color/primary"
             android:textColor="@color/on_primary"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/gray"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" Hoặc "
+                android:textColor="@color/gray"
+                android:textSize="12sp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="@color/gray"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogleLogin"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Google"
+                app:icon="@drawable/ic_google"
+                app:iconTint="@color/white"
+                android:textColor="@color/white"
+                app:strokeColor="@color/gray"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFacebookLogin"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Facebook"
+                app:icon="@drawable/ic_facebook"
+                app:iconTint="@color/white"
+                android:textColor="@color/white"
+                app:strokeColor="@color/gray"/>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPhoneLogin"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Đăng nhập bằng số điện thoại"
+            android:textColor="@color/primary"/>
 
         <TextView
             android:id="@+id/txtRegister"
@@ -110,7 +178,7 @@
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="16dp"
                 app:strokeWidth="2dp"
-                app:strokeColor="@color/primary"
+                app:strokeColor="@color/white"
                 app:cardBackgroundColor="@color/surface">
                 <ImageView
                     android:layout_width="match_parent"
@@ -118,7 +186,7 @@
                     android:src="@drawable/ic_user"
                     android:scaleType="centerInside"
                     android:padding="24dp"
-                    app:tint="@color/primary"
+                    app:tint="@color/white"
                     android:contentDescription="Avatar"/>
             </com.google.android.material.card.MaterialCardView>
 
@@ -152,9 +220,9 @@
                 android:layout_height="wrap_content"
                 android:text="Quản lý gói đăng ký"
                 app:icon="@drawable/ic_favorite"
-                app:iconTint="@color/on_primary"
-                android:backgroundTint="@color/primary"
-                android:textColor="@color/on_primary"/>
+                app:iconTint="@color/white"
+                android:backgroundTint="@color/surface"
+                android:textColor="@color/white"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSettings"
@@ -164,6 +232,18 @@
                 android:layout_marginTop="12dp"
                 android:text="Cài đặt hệ thống"
                 app:icon="@android:drawable/ic_menu_preferences"
+                app:iconTint="@color/white"
+                android:backgroundTint="@color/surface"
+                android:textColor="@color/white"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditDisplayName"
+                style="@style/AppButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Đổi tên hiển thị"
+                app:icon="@android:drawable/ic_menu_edit"
                 app:iconTint="@color/white"
                 android:backgroundTint="@color/surface"
                 android:textColor="@color/white"/>
@@ -196,27 +276,58 @@
                 android:textColor="@color/white"/>
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStatistics"
+                style="@style/AppButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Thống kê hệ thống"
+                android:visibility="gone"
+                app:icon="@drawable/ic_statistics"
+                app:iconTint="@color/white"
+                android:backgroundTint="@color/surface"
+                android:textColor="@color/white"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPaymentSettings"
+                style="@style/AppButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Cấu hình QR Thanh toán"
+                android:visibility="gone"
+                app:icon="@android:drawable/ic_menu_camera"
+                app:iconTint="@color/white"
+                android:backgroundTint="@color/surface"
+                android:textColor="@color/white"/>
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
                 style="@style/AppButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="Đăng xuất"
+                app:icon="@android:drawable/ic_lock_power_off"
+                app:iconTint="@color/white"
                 android:backgroundTint="@color/error"
                 android:textColor="@color/white"/>
 
         </LinearLayout>
     </ScrollView>
 
+    <!--văn bản hện thị versonf-->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2.0.5"
+        android:text="2.1.0"
         android:textSize="12sp"
         android:textColor="@color/gray"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp" />
+    \
 
     <!-- Nút quay về (Đưa xuống cuối để nằm trên cùng) -->
     <com.google.android.material.button.MaterialButton

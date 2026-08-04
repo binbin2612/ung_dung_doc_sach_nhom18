@@ -4,4 +4,13 @@
     <string name="home_button">Home</string>
     <string name="love_button">Favorite</string>
     <string name="login_button">Login</string>
+    <!-- THAY DÃY SỐ DƯỚI ĐÂY BẰNG APP ID THẬT LẤY TỪ FACEBOOK DEVELOPER -->
+    <string name="facebook_app_id">0000000000000000</string>
+    <string name="fb_login_protocol_scheme">fb0000000000000000</string>
+    <!-- THAY BẰNG CLIENT TOKEN TRONG PHẦN SETTINGS -> ADVANCED CỦA FACEBOOK -->
+    <string name="facebook_client_token">thay_bang_client_token_that</string>
+
+    <!-- LẤY MÃ NÀY TỪ FIREBASE CONSOLE: Authentication -> Sign-in method -> Google -> Web SDK configuration -->
+    <string name="default_web_client_id">565387250090-kp1uaag4tv8v81ij4mqa3md3m6c9grsh.apps.googleusercontent.com</string>
+    <string name="google_sign_in_failed">Lỗi đăng nhập Google. Kiểm tra mã SHA-1 trong Firebase!</string>
 </resources>

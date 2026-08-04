@@ -11,7 +11,7 @@ import com.google.android.material.button.MaterialButton
 
 class UserAdapter(
     private val userList: List<User>,
-    private val onDeleteClick: (String) -> Unit,
+    private val onDeleteClick: (User) -> Unit,
     private val onBlockClick: (User) -> Unit,
     private val onHideClick: (User) -> Unit
 ) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
@@ -38,21 +38,25 @@ class UserAdapter(
         if (user.isBlocked) {
             holder.btnBlock.setIconResource(android.R.drawable.ic_lock_lock)
             holder.btnBlock.setIconTintResource(R.color.error)
+            holder.btnBlock.alpha = 1.0f
         } else {
             holder.btnBlock.setIconResource(android.R.drawable.ic_lock_lock)
             holder.btnBlock.setIconTintResource(R.color.white)
+            holder.btnBlock.alpha = 1.0f
         }
 
         // Cập nhật icon Hide
         if (user.isHidden) {
             holder.btnHide.setIconResource(android.R.drawable.ic_menu_close_clear_cancel)
-            holder.btnHide.setIconTintResource(R.color.error)
+            holder.btnHide.setIconTintResource(R.color.gray)
+            holder.btnHide.alpha = 1.0f
         } else {
             holder.btnHide.setIconResource(android.R.drawable.ic_menu_view)
-            holder.btnHide.setIconTintResource(R.color.primary)
+            holder.btnHide.setIconTintResource(R.color.white)
+            holder.btnHide.alpha = 1.0f
         }
 
-        holder.btnDelete.setOnClickListener { onDeleteClick(user.username) }
+        holder.btnDelete.setOnClickListener { onDeleteClick(user) }
         holder.btnBlock.setOnClickListener { onBlockClick(user) }
         holder.btnHide.setOnClickListener { onHideClick(user) }
 

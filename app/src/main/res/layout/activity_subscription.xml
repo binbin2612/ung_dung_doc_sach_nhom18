@@ -99,7 +99,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="50.000 VNĐ / tháng"
+                    android:text="1.000 VNĐ / tháng"
                     android:textColor="@color/primary"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -139,7 +139,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="480.000 VNĐ / năm"
+                    android:text="5.000 VNĐ / năm"
                     android:textColor="@color/primary"
                     android:textSize="22sp"
                     android:textStyle="bold"

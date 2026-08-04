@@ -21,6 +21,7 @@ import com.example.ngdungocsach.database.FirebaseHelper
 import com.example.ngdungocsach.model.Book
 import com.example.ngdungocsach.ui.BaseActivity
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.ListenerRegistration
 
 class MainActivity : BaseActivity() { // Đổi sang BaseActivity
 
@@ -31,6 +32,7 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
     private lateinit var edtSearch: TextInputEditText
     private lateinit var tvEmptyMessage: android.widget.TextView
     private lateinit var spinnerCategoryFilter: AutoCompleteTextView
+    private var booksListener: ListenerRegistration? = null
     private val categories = arrayOf("Tất cả", "Ngôn tình", "Hành động", "Trinh thám", "Kinh dị", "Khoa học", "Kỹ năng sống", "Khác")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,21 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
         val btnHome = findViewById<ImageButton>(R.id.Home_FloatingActionButton)
         val btnLove = findViewById<ImageButton>(R.id.Love_FloatingActionButton)
         val btnLogin = findViewById<ImageButton>(R.id.Login_FloatingActionButton)
+
+        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val role = sharedPreferences.getString("role", null)
+
+        if (role == "admin") {
+            btnLove.setImageResource(R.drawable.ic_statistics)
+        } else {
+            btnLove.setImageResource(R.drawable.ic_favorite)
+        }
+        
+        // Tinh chỉnh các nút icon sáng đồng bộ với nhau (màu trắng thuần)
+        val syncTint = android.content.res.ColorStateList.valueOf(androidx.core.content.ContextCompat.getColor(this, R.color.white))
+        btnHome.imageTintList = syncTint
+        btnLove.imageTintList = syncTint
+        btnLogin.imageTintList = syncTint
 
         rvBooks.layoutManager = LinearLayoutManager(this)
 
@@ -79,11 +96,19 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
 
         btnLove.setOnClickListener {
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            if (sharedPreferences.contains("username")) {
-                val intent = Intent(this, FavoriteActivity::class.java)
-                startActivity(intent)
+            val username = sharedPreferences.getString("username", null)
+            val role = sharedPreferences.getString("role", null)
+
+            if (username != null) {
+                if (role == "admin") {
+                    val intent = Intent(this, com.example.ngdungocsach.admin.StatisticsActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(this, FavoriteActivity::class.java)
+                    startActivity(intent)
+                }
             } else {
-                Toast.makeText(this, "Vui lòng đăng nhập để xem yêu thích", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Vui lòng đăng nhập", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, LoginActivity::class.java))
             }
         }
@@ -101,7 +126,9 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
     }
 
     private fun loadBooks() {
-        firebaseHelper.getAllBooks { books ->
+        booksListener?.remove()
+        booksListener = firebaseHelper.getAllBooks { books ->
+            if (isFinishing || isDestroyed) return@getAllBooks
             fullBookList = ArrayList(books)
             applyFilters()
 
@@ -109,12 +136,18 @@ class MainActivity : BaseActivity() { // Đổi sang BaseActivity
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
             if (sharedPreferences.getString("role", "") == "admin") {
                 firebaseHelper.cleanInvalidUris { count ->
+                    if (isFinishing || isDestroyed) return@cleanInvalidUris
                     if (count > 0) {
                         android.util.Log.d("MainActivity", "Đã dọn dẹp $count sách có URI lỗi")
                     }
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        booksListener?.remove()
     }
 
     private fun applyFilters() {

@@ -12,5 +12,7 @@ data class Book(
     val category: String = "Khác",
     @get:PropertyName("isHidden")
     @set:PropertyName("isHidden")
-    var isHidden: Boolean = false
+    var isHidden: Boolean = false,
+    val viewCount: Int = 0,
+    val favoriteCount: Int = 0
 )

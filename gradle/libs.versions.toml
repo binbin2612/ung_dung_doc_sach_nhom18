@@ -14,6 +14,8 @@ activityCompose = "1.9.3"
 kotlin = "2.0.21"
 composeBom = "2024.10.00"
 googleServices = "4.4.2"
+playServicesAuth = "21.3.0"
+facebookLogin = "17.0.0"
 firebaseBom = "33.7.0"
 androidPdfViewer = "3.1.0-beta.1"
 
@@ -49,6 +51,8 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-database = { group = "com.google.firebase", name = "firebase-database" }
 # Firebase Storage (Lưu trữ ảnh bìa sách và file PDF)
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+facebook-login = { group = "com.facebook.android", name = "facebook-login", version.ref = "facebookLogin" }
 pdf-viewer = { group = "com.github.barteksc", name = "AndroidPdfViewer", version.ref = "androidPdfViewer" }
 
 [plugins]
